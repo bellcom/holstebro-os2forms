@@ -1,0 +1,16 @@
+name = NemID integration
+description = Provides multiple login integrations with NemID
+package = NemID
+core = 7.x
+
+dependencies[] = securepages
+dependencies[] = token
+dependencies[] = webform (>=7.x-4.12)
+dependencies[] = webform_ssl
+dependencies[] = webform_encrypt
+
+; Information added by Drupal.org packaging script on 2018-04-04
+version = "7.x-1.0-rc1"
+core = "7.x"
+project = "nemid"
+datestamp = "1522850531"

@@ -1,0 +1,12 @@
+name = NemID Login
+description = Provides a login box for NemID
+package = NemID
+core = 7.x
+
+dependencies[] = nemid
+
+; Information added by Drupal.org packaging script on 2018-04-04
+version = "7.x-1.0-rc1"
+core = "7.x"
+project = "nemid"
+datestamp = "1522850531"

@@ -1,0 +1,273 @@
+<?php
+
+/**
+ * @file
+ * NemID Integration main module file.
+ */
+
+module_load_include('inc', 'nemid', 'components/nemid_com_tpl');
+
+/**
+ * Implements hook_menu().
+ */
+function nemid_menu() {
+  $items = array();
+
+  $items['admin/config/nemid'] = array(
+    'title' => 'NemID Settings',
+    'position' => 'right',
+    'weight' => -15,
+    'access arguments' => array('administer site configuration'),
+    'page callback' => 'system_admin_menu_block_page',
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_webform_component_info().
+ *
+ * Describes multiple nemid fields that can be used in the webforms.
+ */
+function nemid_webform_component_info() {
+  $components = array();
+  $component_defaults = array(
+    'form_key' => NULL,
+    'pid' => 0,
+    'weight' => 0,
+    'value' => '',
+    'required' => 1,
+    'features' => array(
+      'csv' => TRUE,
+      'email' => FALSE,
+      'email_address' => FALSE,
+      'email_name' => FALSE,
+      'required' => TRUE,
+      'title_display' => FALSE,
+      'title_inline' => FALSE,
+      'conditional' => FALSE,
+      'group' => FALSE,
+      'spam_analysis' => FALSE,
+      'attachment' => FALSE,
+    ),
+  );
+
+  // Person FIELDS - CPR.
+  $components['nemid_cpr'] = array(
+    'label' => t('NemID CPR'),
+    'description' => t('Create CPR field.'),
+    'name' => 'nemid_cpr',
+    'file' => 'components/nemid_cpr.inc',
+  );
+  $components['nemid_cpr'] += $component_defaults;
+
+  // Person FIELDS - PID.
+  $components['nemid_pid'] = array(
+    'label' => t('NemID PID'),
+    'description' => t('Create PID field.'),
+    'name' => 'nemid_pid',
+    'file' => 'components/nemid_pid.inc',
+  );
+  $components['nemid_pid'] += $component_defaults;
+
+  // Person FIELDS - Name.
+  $components['nemid_name'] = array(
+    'label' => t('NemID Name'),
+    'description' => t('Create NemID name field.'),
+    'name' => 'nemid_name',
+    'file' => 'components/nemid_name.inc',
+  );
+  $components['nemid_name'] += $component_defaults;
+
+  // Person FIELDS - CO Address.
+  $components['nemid_coaddress'] = array(
+    'label' => t('NemID C/O address'),
+    'description' => t('Create NemID C/O-address field.'),
+    'name' => 'nemid_coaddress',
+    'file' => 'components/nemid_coaddress.inc',
+  );
+  $components['nemid_coaddress'] += $component_defaults;
+
+  // Person FIELDS - Address.
+  $components['nemid_address'] = array(
+    'label' => t('NemID Address'),
+    'description' => t('Create NemID address field.'),
+    'name' => 'nemid_address',
+    'file' => 'components/nemid_address.inc',
+  );
+  $components['nemid_address'] += $component_defaults;
+
+  // Person FIELDS - City.
+  $components['nemid_city'] = array(
+    'label' => t('NemID Postal / City'),
+    'description' => t('Create NemID Postal code / city field.'),
+    'name' => 'nemid_city',
+    'file' => 'components/nemid_city.inc',
+  );
+  $components['nemid_city'] += $component_defaults;
+
+  // Company FIELDS - CVR.
+  $components['nemid_com_cvr'] = array(
+    'label' => t('NemID Company CVR'),
+    'description' => t('Create Company CVR field.'),
+    'name' => 'nemid_com_cvr',
+    'file' => 'components/nemid_com_cvr.inc',
+  );
+  $components['nemid_com_cvr'] += $component_defaults;
+
+  // Company FIELDS - RID.
+  $components['nemid_com_rid'] = array(
+    'label' => t('NemID Company RID'),
+    'description' => t('Create Company RID field.'),
+    'name' => 'nemid_com_rid',
+    'file' => 'components/nemid_com_rid.inc',
+  );
+  $components['nemid_com_rid'] += $component_defaults;
+
+  // Company FIELDS - Name.
+  $components['nemid_com_name'] = array(
+    'label' => t('NemID Company Name'),
+    'description' => t('Create Company Name field.'),
+    'name' => 'nemid_com_name',
+    'file' => 'components/nemid_com_name.inc',
+  );
+  $components['nemid_com_name'] += $component_defaults;
+
+  // Company FIELDS - Address.
+  $components['nemid_com_addr'] = array(
+    'label' => t('NemID Company Address'),
+    'description' => t('Create Company address field.'),
+    'name' => 'nemid_com_addr',
+    'file' => 'components/nemid_com_addr.inc',
+  );
+  $components['nemid_com_addr'] += $component_defaults;
+
+  // Company FIELDS - City.
+  $components['nemid_com_city'] = array(
+    'label' => t('NemID Company Postal / City'),
+    'description' => t('Create Company city field.'),
+    'name' => 'nemid_com_city',
+    'file' => 'components/nemid_com_city.inc',
+  );
+  $components['nemid_com_city'] += $component_defaults;
+
+  return $components;
+}
+
+/**
+ * Updating fields with the values from nemlogin request.
+ *
+ * Works also with the nested structure.
+ *
+ * @param array $tree
+ *   Tree of webform elements.
+ * @param array $message
+ *   Array with messages.
+ */
+function nemid_populate_fields_recursive(array &$tree, array $message) {
+  foreach (array_keys($tree) as $item_key) {
+    if ($tree['#tree']) {
+      $type = $tree[$item_key]['#webform_component']['type'];
+      $item = & $tree[$item_key];
+    }
+    else {
+      $type = $tree[$item_key]['type'];
+      $item = & $tree;
+    }
+
+    switch ($type) {
+      case 'nemid_cpr':
+        $item['#value'] = $message['cpr'];
+        if ($message['cpr'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_pid':
+        $item['#value'] = $message['pid'];
+        if ($message['pid'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_address':
+        $address_text = $message['road'] . ' ' . $message['road_no'] . ' ' . $message['floor'] . ' ' . $message['door'];
+        $item['#value'] = $address_text;
+        if ($message['road'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_coaddress':
+        $item['#value'] = $message['coname'];
+        if ($message['coname'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_name':
+        $item['#value'] = $message['name'];
+        if ($message['name'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_city':
+        $item['#value'] = $message['zipcode'] . ' ' . $message['city'];
+        if ($message['zipcode'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_com_cvr':
+        $item['#value'] = $message['cvr'];
+        if ($message['cvr'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_com_rid':
+        $item['#value'] = $message['rid'];
+        if ($message['rid'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_com_name':
+        $item['#value'] = $message['company_name'];
+        if ($message['company_name'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_com_addr':
+        $item['#value'] = $message['company_street'] . ' ' . $message['company_house_nr'] . ' ' . $message['company_floor'];
+        if ($message['company_street'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+
+      case 'nemid_com_city':
+        $item['#value'] = $message['company_zipcode'] . ' ' . $message['company_city'];
+        if ($message['company_zipcode'] != '') {
+          $item['#attributes']['readonly'] = 'readonly';
+        }
+        break;
+    }
+
+    unset($item);
+  }
+
+  foreach (array_keys($tree) as $item_key) {
+    if (isset($tree[$item_key]['#webform_component'])) {
+      if (!empty($tree[$item_key]['#webform_component']['children'])) {
+        foreach ($tree[$item_key]['#webform_component']['children'] as $child) {
+          nemid_populate_fields_recursive($tree[$item_key][$child['form_key']], $message);
+        }
+      }
+    }
+  }
+}

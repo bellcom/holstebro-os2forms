@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function webform_custom_buttons_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+  $page_count = $form['details']['page_count']['#value'];
+  
+  if($page_count > 1) {
+    $nid = $form['#node']->nid;
+    $node = node_load($nid);
+    $button_label = t('Next');
+    $page_num = $form['details']['page_num']['#value'];
+    if($page_num === 1 && $node->webform['first_button_text']) {
+      $button_label = $node->webform['first_button_text'];
+    } else if ($page_num > 1 && $node->webform['next_button_text']) {
+      $button_label = $node->webform['next_button_text'];
+    }
+    $form['actions']['next']['#value'] = $button_label;
+  }
+}
+
+/**
+ * Implements hook_form_webform_configure_form_alter().
+ * changes default value
+ */
+function webform_custom_buttons_form_webform_configure_form_alter(&$form, &$form_state, $form_id) {
+  $node                                              = $form['#node'];
+  $submit_button_text                                = $node->webform['submit_text'] ? $node->webform['submit_text'] : t('Take action!');
+  $form['advanced']['submit_text']['#default_value'] = $submit_button_text;
+
+  $form['advanced']['first_button_text'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Submit button text (first)'),
+    '#default_value' => $node->webform['first_button_text'],
+    '#description'   => t('By default the next step button on this form (multistep) will have the label <em>Next</em>. Enter a new title here to override the default for the first one.'),
+  );
+  $form['advanced']['next_button_text'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Submit button text (intermediate)'),
+    '#default_value' => $node->webform['next_button_text'],
+    '#description'   => t('By default the next step button on this form (multistep) will have the label <em>Next</em>. Enter a new title here to override the default.'),
+  );
+
+  array_unshift($form['#submit'], 'webform_custom_buttons_webform_configure_form_submit');
+
+  return $form;
+}
+
+function webform_custom_buttons_webform_configure_form_submit(&$form, &$form_state) {
+  $node                               = $form['#node'];
+  $node->webform['first_button_text'] = $form_state['values']['first_button_text'];
+  $node->webform['next_button_text']  = $form_state['values']['next_button_text'];
+}
+
+/**
+ * Implements hook_form_form_builder_webform_save_form_alter().
+ *
+ * Adds a text field to alter the submit button text of the
+ * webform to be generated.
+ */
+function webform_custom_buttons_form_form_builder_webform_save_form_alter(&$form, &$form_state, $form_id) {
+  $node = $form['#node'] = node_load($form['nid']['#value']);
+  $old = &$node->webform;
+  
+  $form['submit_buttons'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Submit button labels'),
+  );
+  $buttons = &$form['submit_buttons'];
+  
+  $common = array(
+    '#type' => 'textfield',
+    '#attributes' => array('class' => array('form-submit')),
+  );
+  $buttons['submit_text'] = array(
+    '#title'         => t('Last page submit button'),
+    '#default_value' => !empty($old['submit_text']) ? $old['submit_text'] : t('Take action!'),
+    '#description'   => t("This button appears on all single-page webforms and on the last page of a multi-page form. Click to change the label!"),
+  ) + $common;
+  $buttons['first_button_text'] = array(
+    '#title'         => t('First page submit button'),
+    '#default_value' => isset($old['first_button_text']) ? $old['first_button_text'] : t('Next'),
+    '#description'   => t('This button appears on the first page of a multi-page form. Click to change the label!'),
+  ) + $common;
+  $buttons['next_button_text'] = array(
+    '#title'         => t('Intermediate submit button'),
+    '#default_value' => isset($old['next_button_text']) ? $old['next_button_text'] : t('Next'),
+    '#description'   => t('This button appears on all other (neither first nor last) pages of a multi-page form. Click to change the label!'),
+  ) + $common;
+
+  array_unshift($form['#submit'], 'webform_custom_buttons_webform_save_form_submit');
+  return $form;
+}
+
+/**
+ * Submit handler to be used in e.g. the wizard
+ * it sets an submit_text based on out extra field in the ae form builder
+ **/
+function webform_custom_buttons_webform_save_form_submit($form, &$form_state) {
+  $node =  $form['#node'];
+  $values = &$form_state['values'];
+  $changed = FALSE;
+  foreach (array('submit_text', 'first_button_text', 'next_button_text') as $name) {
+    if (!isset($node->webform[$name]) || $node->webform[$name] != $values[$name]) {
+      $changed = TRUE;
+      $node->webform[$name] = $values[$name];
+    }
+  }
+  if ($changed) {
+    node_save($node);
+  }
+}

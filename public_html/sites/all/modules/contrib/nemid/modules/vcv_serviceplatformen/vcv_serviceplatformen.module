@@ -1,0 +1,306 @@
+<?php
+
+/**
+ * @file
+ * Implements Valghalla CPR validation with serviceplatformen.dk.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function vcv_serviceplatformen_menu() {
+  $items['admin/config/nemid/vcv_serviceplatformen'] = array(
+    'title' => 'CPRBasicInformation settings',
+    'description' => 'Settings for CPRBasicInformation service serviceplatformen.dk',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('vcv_serviceplatformen_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
+/**
+ * Page callback for settings.
+ */
+function vcv_serviceplatformen_settings() {
+  $cpr = variable_get('test_cpr');
+  $output = '';
+  if ($cpr != '') {
+    $message = vcv_serviceplatformen_get_address($cpr);
+
+    if ($message['status']) {
+      $output = '<div style="font-size: 15px; color : green"><b>Succeed</b></div>';
+
+      // Test mode.
+      if (variable_get('vcv_serviceplatformen_mode_selector') == 1) {
+        // Using test_mode_fixed_cpr, if one provided,
+        // otherwise leave unchanged.
+        $fixed_cpr = trim(variable_get('vcv_serviceplatformen_test_mode_fixed_cpr', $cpr));
+        if (!empty($fixed_cpr)) {
+          $cpr = $fixed_cpr;
+        }
+      }
+
+      $output .= '<div> Test CPR nr. ' . $cpr . '<br />';
+      foreach ($message as $key => $item) {
+        if ($key != 'status') {
+          $output .= $key . ': ' . $item . '<br />';
+        }
+      }
+      $output .= '</div>';
+    }
+    else {
+      $output = '<b style = "color : red">Error: ' . $message['text'] . '</b>';
+    }
+    variable_set('test_cpr', '');
+  }
+
+  $form['mode_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Mode'),
+  );
+  $form['mode_fieldset']['vcv_serviceplatformen_mode_selector'] = array(
+    '#type' => 'radios',
+    '#title' => t('Mode selector'),
+    '#default_value' => variable_get('vcv_serviceplatformen_mode_selector', 0),
+    '#options' => array(0 => t('Live'), 1 => t('Test')),
+  );
+  $form['mode_fieldset']['vcv_serviceplatformen_test_mode_fixed_cpr'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Fixed test CPR (only if test mode is on)'),
+    '#default_value' => variable_get('vcv_serviceplatformen_test_mode_fixed_cpr'),
+    '#description' => t('Is set, fixed CPR will be used for all requests to the serviceplatformen instead of the provided CPR. Useful when testing is needed with NemID login block'),
+    '#states' => array(
+      'invisible' => array(
+        ':input[name="vcv_serviceplatformen_mode_selector"]' => array('value' => 0),
+      ),
+    ),
+
+  );
+
+  $form['test_cpr_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Test CPR'),
+  );
+  $form['test_cpr_fieldset']['test_cpr'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Test cpr nr.'),
+  );
+
+  $form['test_cpr_fieldset']['test_serviceplatformen_function'] = array(
+    '#type' => 'item',
+    '#markup' => $output,
+  );
+
+  $form['stam'] = array(
+    '#title' => 'Person stamdata',
+    '#type' => 'fieldset',
+  );
+
+  $form['stam']['vcv_serviceplatformen_serviceagreementuuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Serviceaftale UUID',
+    '#default_value' => variable_get('vcv_serviceplatformen_serviceagreementuuid', ''),
+  );
+
+  $form['stam']['vcv_serviceplatformen_serviceuuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service UUID',
+    '#default_value' => variable_get('vcv_serviceplatformen_serviceuuid', ''),
+  );
+
+  $form['stam']['vcv_serviceplatformen_wsdl'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service WSDL location',
+    '#default_value' => variable_get('vcv_serviceplatformen_wsdl', ''),
+    '#description' => t('ex. https://exttestwww.serviceplatformen.dk/administration/wsdl/CPRBasicInformationService.wsdl'),
+  );
+
+  $form['stam']['vcv_serviceplatformen_location'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service location (live)',
+    '#default_value' => variable_get('vcv_serviceplatformen_location', ''),
+    '#description' => t('ex. https://exttest.serviceplatformen.dk/service/CPRBasicInformation/CPRBasicInformation/1'),
+  );
+
+  $form['stam']['vcv_serviceplatformen_location_test'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service location (test)',
+    '#default_value' => variable_get('vcv_serviceplatformen_location_test', ''),
+    '#description' => t('ex. https://exttest.serviceplatformen.dk/service/CPRBasicInformation/CPRBasicInformation/1'),
+  );
+
+  $form['vcv_serviceplatformen_usersystemuuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'System UUID',
+    '#default_value' => variable_get('vcv_serviceplatformen_usersystemuuid', ''),
+  );
+
+  $form['vcv_serviceplatformen_useruuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Kommune UUID',
+    '#default_value' => variable_get('vcv_serviceplatformen_useruuid', ''),
+  );
+
+  $form['vcv_serviceplatformen_accountinginfo'] = array(
+    '#type' => 'textfield',
+    '#title' => 'AccountingInfo',
+    '#default_value' => variable_get('vcv_serviceplatformen_accountinginfo', ''),
+  );
+
+  $form['vcv_serviceplatformen_certfile_passphrase'] = array(
+    '#type' => 'password',
+    '#title' => 'Certfile passphrase',
+    '#default_value' => variable_get('vcv_serviceplatformen_certfile_passphrase', ''),
+  );
+
+  $form['vcv_serviceplatformen_certfile'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Certfile (live)',
+    '#default_value' => variable_get('vcv_serviceplatformen_certfile', ''),
+  );
+
+  $form['vcv_serviceplatformen_certfile_test'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Certfile (test)',
+    '#default_value' => variable_get('vcv_serviceplatformen_certfile_test', ''),
+  );
+
+  $form = system_settings_form($form);
+  array_unshift($form['#submit'], 'vcv_serviceplatformen_settings_submit');
+
+  return $form;
+}
+
+/**
+ * Extra submit handler for serviceplatformen settings.
+ */
+function vcv_serviceplatformen_settings_submit(&$form, &$form_state) {
+  if ($form_state['values']['vcv_serviceplatformen_certfile_passphrase'] == '') {
+    unset($form_state['values']['vcv_serviceplatformen_certfile_passphrase']);
+  }
+}
+
+/**
+ * Validate cpr callback.
+ *
+ * @cpr String - PSN (cpr) ([0-9]{6}\-[0-9]{4})
+ *
+ * @return array
+ *   [status] => TRUE/FALSE
+ *   [text] => Descriptive text shown when CPR doesn't validate
+ */
+function vcv_serviceplatformen_validate_cpr($cpr) {
+  return vcv_serviceplatformen_query($cpr);
+}
+
+/**
+ * Query the webservice.
+ */
+function vcv_serviceplatformen_query($cpr) {
+  ini_set('soap.wsdl_cache_enabled', 0);
+  ini_set('soap.wsdl_cache_ttl', 0);
+
+  try {
+    $mode = variable_get('vcv_serviceplatformen_mode_selector');
+    $wsdl_address = variable_get('vcv_serviceplatformen_wsdl');
+    $service_location = variable_get('vcv_serviceplatformen_location');
+    $certfile_passphrase = variable_get('vcv_serviceplatformen_certfile_passphrase');
+    $certfile = variable_get('vcv_serviceplatformen_certfile');
+
+    // Test mode.
+    if ($mode == 1) {
+      $service_location = variable_get('vcv_serviceplatformen_location_test');
+      $certfile = variable_get('vcv_serviceplatformen_certfile_test');
+
+      // Using test_mode_fixed_cpr, if one provided, otherwise leave unchanged.
+      $fixed_cpr = trim(variable_get('vcv_serviceplatformen_test_mode_fixed_cpr', $cpr));
+      if (!empty($fixed_cpr)) {
+        $cpr = $fixed_cpr;
+      }
+    }
+
+    $client = new SoapClient($wsdl_address, array(
+      'location' => $service_location,
+      'local_cert' => $certfile,
+      'passphrase' => $certfile_passphrase,
+      'trace' => TRUE,
+    ));
+
+    $serviceagreementuuid = variable_get('vcv_serviceplatformen_serviceagreementuuid');
+    $usersystemuuid = variable_get('vcv_serviceplatformen_usersystemuuid');
+    $useruuid = variable_get('vcv_serviceplatformen_useruuid');
+    $serviceuuid = variable_get('vcv_serviceplatformen_serviceuuid');
+    $accountinginfo = variable_get('vcv_serviceplatformen_accountinginfo');
+    global $user;
+    $onbehalfofuser = $user->name;
+
+    $pnr = str_replace('-', '', $cpr);
+
+    $request = array(
+      'InvocationContext' => array(
+        'ServiceAgreementUUID' => $serviceagreementuuid,
+        'UserSystemUUID' => $usersystemuuid,
+        'UserUUID' => $useruuid,
+        'ServiceUUID' => $serviceuuid,
+        'AccountingInfo' => $accountinginfo,
+        'OnBehalfOfUser' => $onbehalfofuser,
+      ),
+      'PNR' => $pnr,
+    );
+
+    $response = (array) $client->callCPRBasicInformationService($request);
+
+    $response['status'] = TRUE;
+    return $response;
+
+  }
+  catch (Exception $e) {
+    list($fault, $message) = explode(':', $e->faultstring);
+
+    if (!$message) {
+      $message = $e->faultstring;
+    }
+
+    return array(
+      'status' => FALSE,
+      'text' => $message,
+    );
+  }
+}
+
+/**
+ * Fetch address for the specified CPR.
+ *
+ * @cpr
+ *  String - PSN (cpr) ([0-9]{6}\-[0-9]{4})
+ *
+ * @return array
+ *   [status] => TRUE/FALSE
+ *   [address] => Roadname 10
+ *   [zipcode] => 1212
+ *   [text] => Descriptive text if something goes wrong
+ */
+function vcv_serviceplatformen_get_address($cpr) {
+  $message = vcv_serviceplatformen_query($cpr);
+
+  // If all goes well we return de address as valghalla wants it.
+  if ($message['status']) {
+    return array(
+      'mode' => variable_get('vcv_serviceplatformen_mode_selector') ? 'TEST mode' : 'LIVE mode',
+      'status' => TRUE,
+      'name' => isset($message['adresseringsnavn']) ? $message['adresseringsnavn'] : '',
+      'road' => isset($message['vejadresseringsnavn']) ? $message['vejadresseringsnavn'] : '',
+      'road_no' => isset($message['husnummer']) ? $message['husnummer'] : '',
+      'floor' => isset($message['etage']) ? $message['etage'] : '',
+      'door' => isset($message['sidedoer']) ? $message['sidedoer'] : '',
+      'zipcode' => isset($message['postnummer']) ? $message['postnummer'] : '',
+      'city' => isset($message['postdistrikt']) ? $message['postdistrikt'] : '',
+      'coname' => isset($message['conavn']) ? $message['conavn'] : '',
+    );
+  }
+  else {
+    return $message;
+  }
+}

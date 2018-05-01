@@ -1,0 +1,458 @@
+<?php
+
+/**
+ * @file
+ * NemID login module.
+ *
+ * Based on https://code.google.com/p/nemid-php/ which is under the MIT licences
+ * The following documents where used to implement the Javascript client:
+ * - Configuration and setup @link https://goo.gl/MsLxA6
+ * - NemID Integration - OCES @link https://goo.gl/Rf4vtz
+ * See more on https://www.nets.eu.
+ */
+
+use WAYF\NemidCertificateCheck;
+use WAYF\nemidlogin;
+
+require dirname(__FILE__) . '/lib/Nemid.php';
+
+/**
+ * Implements hook_menu().
+ */
+function nemid_login_menu() {
+  $items['nemid'] = array(
+    'title'  => 'NemID login page',
+    'page callback' => '_nemid_login_page',
+    'page arguments' => array(),
+    'access arguments' => array('View published content'),
+    'type'  => MENU_CALLBACK,
+  );
+
+  $items['nemid/verify'] = array(
+    'title' => 'NemID login verify',
+    'page callback' => '_nemid_login_verify',
+    'page arguments' => array(),
+    'access arguments' => array('access content'),
+    'type'  => MENU_CALLBACK,
+  );
+
+  $items['admin/config/nemid/nemid_login'] = array(
+    'title' => 'Configure NemID login block',
+    'description' => 'Configure NemID login block settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_nemid_login_admin'),
+    'access arguments' => array('administer site configuration'),
+    'type'  => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function nemid_login_block_info() {
+  $blocks['nemid_login'] = array(
+    'info' => t('NemID login block'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function nemid_login_block_view($delta = '') {
+  // TODO: <meta http-equiv="X-UA-Compatible" content="IE=edge"> .
+  // @see NemID Integration - OCES @link https://goo.gl/Rf4vtz
+  $block = array();
+  switch ($delta) {
+    case 'nemid_login':
+      $block['subject'] = t('NemID Login');
+      $block['content'] = theme('nemid_login_block');
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * NemID login page callback.
+ */
+function _nemid_login_page() {
+  return theme('nemid_login_block');
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nemid_login_theme(&$existing, $type, $theme, $path) {
+  return array(
+    'nemid_login_block' => array(
+      'path' => drupal_get_path('module', 'nemid_login') . '/templates',
+      'template' => 'nemid-login-block',
+      'variables' => array('params' => NULL, 'settings' => NULL, 'help' => NULL),
+    ),
+    'webform_view' => array(
+      'function' => 'nemid_login_webform_view',
+      'theme path' => drupal_get_path('module', 'nemid_login'),
+    ),
+  );
+
+}
+
+/**
+ * Help function to strip certificate.
+ */
+function strip_certificate($to_be_stripped) {
+  $result = str_replace("\n", "", $to_be_stripped);
+  $result = str_replace("\r", "", $result);
+  $result = str_replace("-----BEGIN CERTIFICATE-----", "", $result);
+  $result = str_replace("-----END CERTIFICATE-----", "", $result);
+
+  return $result;
+}
+
+/**
+ * Parameters get function.
+ */
+function _nemid_login_get_params() {
+  $nemidlogin = new nemidlogin();
+  $config = _nemid_login_get_config_object();
+  $old_params = $nemidlogin->prepareparamsfornemid($config);
+
+  $millisec = strval(intval(microtime(TRUE)) * 1000);
+
+  $params = [
+    "SP_CERT" => strip_certificate($old_params['paramcert']),
+    "CLIENTFLOW" => "OCESLOGIN2",
+    "SIGN_PROPERTIES" => "challenge=" . $millisec,
+    "TIMESTAMP" => $millisec,
+  ];
+
+  uksort($params, "strnatcasecmp");
+
+  $normalized = '';
+  foreach ($params as $name => $value) {
+    $normalized .= $name . $value;
+  }
+
+  $utfparams = mb_convert_encoding($normalized, "UTF-8", "auto");
+  $paramsdigest = hash('sha256', $utfparams, TRUE);
+  $params['PARAMS_DIGEST'] = base64_encode($paramsdigest);
+
+  $key = openssl_pkey_get_private($config->privatekey, $config->privatekeypass);
+  openssl_sign($utfparams, $signature, $key, 'sha256');
+
+  $params['DIGEST_SIGNATURE'] = base64_encode($signature);
+
+  $encoded_params = json_encode($params, JSON_UNESCAPED_SLASHES);
+
+  return $encoded_params;
+}
+
+/**
+ * Settings get function.
+ */
+function _nemid_login_get_settings() {
+  $millisec = round(microtime(TRUE) * 1000);
+
+  $variable_prefix = 'nemid_login_';
+  $mode = variable_get($variable_prefix . 'mode', 'test');
+
+  $base_url = variable_get($variable_prefix . 'base_url_' . $mode);
+  $ui_mode = variable_get($variable_prefix . 'ui_mode_' . $mode, 'std');
+
+  $settings = array(
+    'iframe_url'    => $base_url . '/launcher/' . $ui_mode . '/' . $millisec,
+    'danid_baseurl' => $base_url,
+  );
+
+  return $settings;
+}
+
+/**
+ * Nemlogin verification function.
+ */
+function _nemid_login_verify() {
+  $disableocspcheck = TRUE;
+  $message = '';
+
+  // Do we have the session already?
+  if ($_SESSION['nemid_login']['message']) {
+    return $_SESSION['nemid_login']['message'];
+  }
+
+  if (isset($_POST['response'])) {
+    $errorcodes = NULL;
+    require dirname(__FILE__) . '/lib/nemid-error-codes.php';
+    $response = base64_decode($_POST['response']);
+
+    if (isset($errorcodes[$response])) {
+      drupal_set_message($errorcodes[$response]['description'], 'error');
+      $_SESSION['nemid_login'] = array();
+      $_SESSION['nemid_login']['errors'] = $errorcodes[$response];
+      if (arg(0) == 'nemid' && arg(1) == 'verify') {
+        drupal_goto('<front>');
+      }
+    }
+    else {
+      $_SESSION['nemid_login'] = array();
+
+      $trustedrootdigests = new StdClass();
+      $trustedrootdigests->trustedrootdigests = array(
+        'productionRootOces' => '92d8092ee77bc9208f0897dc05271894e63ef27933ae537fb983eef0eae3eec8',
+        'preproductionCertificateOcesII' => '0e2fd1fda36a4bf3995e28619704d60e3382c91e44a2b458ab891316380b1d50',
+      );
+
+      $nemid = new NemidCertificateCheck();
+      try {
+
+        $certificate = $nemid->checkAndReturnCertificate($_POST['response'], FALSE, $trustedrootdigests, $disableocspcheck);
+        $subject = end($certificate['tbsCertificate']['subject']);
+        $pid = $subject['serialNumber'];
+        $config = _nemid_login_get_config_object();
+        $cpr = $nemid->pidCprRequest($config, $pid);
+
+        // Use serviceplatform to get address and other info.
+        if (module_exists('vcv_serviceplatformen')) {
+          $message = vcv_serviceplatformen_get_address($cpr);
+          $message['cpr'] = $cpr;
+
+          $_SESSION['nemid_login']['message'] = $message;
+        }
+        if (arg(0) == 'nemid' && arg(1) == 'verify') {
+          drupal_goto('<front>');
+        }
+
+      }
+      catch (Exception $e) {
+        echo $e->getMessage();
+      }
+    }
+    return $message;
+  }
+}
+
+/**
+ * Administration page callback.
+ */
+function _nemid_login_admin() {
+  $form = array();
+
+  $variable_prefix = 'nemid_login_';
+  $modes = array('test', 'live');
+
+  $shared_fields = array(
+    'certificate' => array('type' => 'textarea', 'title' => t('Certificate')),
+    'private_key' => array('type' => 'textarea', 'title' => t('Private key')),
+    'private_key_password' => array(
+      'type' => 'password',
+      'title' => t('Private key password'),
+    ),
+    'base_url' => array('type' => 'textfield', 'title' => t('Base url')),
+    'ui_mode' => array(
+      'type' => 'radios',
+      'title' => t('UI mode'),
+      'options' => array('std' => t('Standard'), 'lmt' => t('Limited')),
+    ),
+    'serviceid' => array('type' => 'textfield', 'title' => t('Service ID')),
+    'certificateandkey' => array(
+      'type' => 'textfield',
+      'title' => t('Path to PEM with certificate and key'),
+    ),
+  );
+
+  $form[$variable_prefix . 'mode'] = array(
+    '#type' => 'radios',
+    '#title' => t('NemID mode'),
+    '#default_value' => variable_get($variable_prefix . 'mode', 'test'),
+    '#options' => array(
+      'live' => t('Live'),
+      'test' => t('Test'),
+    ),
+  );
+
+  foreach ($modes as $mode) {
+    $form[$variable_prefix . $mode] = array(
+      '#title' => t('Settings for @mode mode', array('@mode' => $mode)),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+    foreach ($shared_fields as $field_key => $field) {
+      $form[$variable_prefix . $mode][$variable_prefix . $field_key . '_' . $mode] = array(
+        '#type' => $field['type'],
+        '#title' => $field['title'],
+        '#default_value' => variable_get($variable_prefix . $field_key . '_' . $mode, NULL),
+        '#required' => TRUE,
+      );
+
+      if ($field['type'] == 'radios') {
+        $form[$variable_prefix . $mode][$variable_prefix . $field_key . '_' . $mode]['#options'] = $field['options'];
+      }
+
+      if ($field['type'] == 'password') {
+        $form[$variable_prefix . $mode][$variable_prefix . $field_key . '_' . $mode]['#attributes'] = array('value' => variable_get($variable_prefix . $field_key . '_' . $mode, NULL));
+      }
+    }
+  }
+
+  $nemid_login_form_help = variable_get('nemid_login_form_help', array(
+    'format' => 'filtered_html',
+    'value' => '',
+  ));
+  $form['nemid_login_form_help'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Nemid Login form help text'),
+    '#format' => $nemid_login_form_help['format'],
+    '#default_value' => $nemid_login_form_help['value'],
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Config get function.
+ */
+function _nemid_login_get_config_object() {
+  $variable_prefix = 'nemid_login_';
+  $mode = variable_get($variable_prefix . 'mode', 'test');
+  $search = array(
+    "\r\n", "-----BEGIN CERTIFICATE-----\n",
+    "\n-----END CERTIFICATE-----\n",
+  );
+  $replace = array("\n", "", "");
+
+  if ($mode == 'live') {
+    $server = 'https://pidws.certifikat.dk/pid_serviceprovider_server/pidxml/';
+  }
+  else {
+    $server = 'https://pidws.pp.certifikat.dk/pid_serviceprovider_server/pidxml/';
+  }
+
+  $config = new StdClass();
+  $config->server = $server;
+  $config->privatekey = str_replace($search, $replace, variable_get($variable_prefix . 'private_key_' . $mode));
+  $config->privatekeypass = variable_get($variable_prefix . 'private_key_password_' . $mode);
+  $config->certificate = str_replace($search, $replace, variable_get($variable_prefix . 'certificate_' . $mode));
+  $config->serverurlprefix = variable_get($variable_prefix . 'base_url_' . $mode);
+  $config->serviceid = variable_get($variable_prefix . 'serviceid_' . $mode);
+  $config->certificateandkey = variable_get($variable_prefix . 'certificateandkey_' . $mode);
+  $config->nonceprefix = 'nemid-test-';
+  return $config;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function nemid_login_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'webform_configure_form':
+
+      $form['advanced']['nemid_login_block_enable_' . $form['nid']['#value']] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Include nemid login block'),
+        '#default_value' => variable_get('nemid_login_block_enable_' . $form['nid']['#value'], 0),
+      );
+      $form['#submit'][] = 'nemid_login_webform_configure_save';
+      break;
+
+    case strstr($form_id, 'webform_client_form'):
+      // Destroy the session if there is an error, get login block again.
+      if (isset($_SESSION['nemid_login']['errors'])) {
+        unset($_SESSION['nemid_login']['message']);
+      }
+
+      if (isset($_POST['response'])) {
+        // Get address from serviceplatformen by CPR request.
+        $message = _nemid_login_verify();
+
+        if ($message['status']) {
+          nemid_populate_fields_recursive($form['submitted'], $message);
+        }
+        else {
+          watchdog("Drupal Nemid Login", 'Message status is empty', array(), WATCHDOG_DEBUG);
+        }
+      }
+
+      break;
+  }
+}
+
+/**
+ * Save webform configuration.
+ */
+function nemid_login_webform_configure_save($form, &$form_state) {
+  $login_block_enable = $form_state['values']['nemid_login_block_enable_' . $form['nid']['#value']];
+  variable_set('nemid_login_block_enable_' . $form['nid']['#value'], $login_block_enable);
+}
+
+/**
+ * Webform_view theme function.
+ */
+function nemid_login_webform_view($variables) {
+  $block = '';
+  $nid = $variables['webform']['#node']->nid;
+  $page_num = isset($variables['webform']["#form"]['progressbar']) ? $variables['webform']["#form"]['progressbar']['#page_num'] : 1;
+  $page_count = isset($variables['webform']["#form"]['progressbar']) ? $variables['webform']["#form"]['progressbar']['#page_count'] : NULL;
+  if (variable_get('nemid_login_block_enable_' . $nid, 0) && (!isset($_POST['response']) && !isset($_SESSION['nemid_login']['message']))) {
+    $nemid_login_block = block_load('nemid_login', 'nemid_login');
+    $output = _block_get_renderable_array(_block_render_blocks(array($nemid_login_block)));
+    $block = drupal_render($output);
+  }
+
+  if ($variables['webform']['#enabled']) {
+    if (!isset($variables['webform']["#form"]['progressbar'])) {
+      // Unsetting the message after it has been used once
+      // for non-multipage forms.
+      unset($_SESSION['nemid_login']['message']);
+    }
+    else {
+      // Unsetting the message after it has been used once
+      // for multipage forms.
+      if ($page_num == ($page_count - 1)) {
+        unset($_SESSION['nemid_login']['message']);
+      }
+    }
+    return $block . drupal_render($variables['webform']['#form']);
+  }
+}
+
+/**
+ * Theme preprocess function for nemid_login_block.
+ */
+function nemid_login_preprocess_nemid_login_block(&$vars) {
+  $vars['errors'] = FALSE;
+  if (isset($_SESSION['nemid_login']['errors'])) {
+    $vars['errors'] = TRUE;
+  }
+
+  $post_back_form_action = 'nemid/verify';
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $nid = arg(1);
+    $node = node_load($nid);
+    if ($node->type == 'webform') {
+      $post_back_form_action = 'node/' . $nid;
+    }
+  }
+  $vars['post_back_form_action'] = url($post_back_form_action);
+
+  if (!isset($vars['help'])) {
+    $help = variable_get('nemid_login_form_help', array(
+      'format' => 'filtered_html',
+      'value' => '',
+    ));
+    $vars['help'] = check_markup($help['value'], $help['format']);
+  }
+
+  if (!isset($vars['params'])) {
+    $vars['params'] = _nemid_login_get_params();
+  }
+
+  $settings = _nemid_login_get_settings();
+  $vars['settings'] = $settings;
+  drupal_add_js(array('nemidLogin' => $settings), array('type' => 'setting'));
+  drupal_add_js(drupal_get_path('module', 'nemid_login') . '/nemid_login.js');
+}

@@ -1,0 +1,218 @@
+<?php
+
+/**
+ * @file
+ * Implements CVR Online service from serviceplatformen.dk.
+ *
+ * @copyright 2018 OS2 - Offentligt Digitaliseringsfællesskab.
+ */
+
+module_load_include('inc', 'cvr_serviceplatformen', 'includes/cvr_serviceplatformen');
+
+/**
+ * Implements hook_menu().
+ */
+function cvr_serviceplatformen_menu() {
+  $items['admin/config/nemid/cvr_serviceplatformen'] = array(
+    'title' => 'CVR Online 3.0 settings',
+    'description' => 'Settings for CVR Online 3.0 service serviceplatformen.dk',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cvr_serviceplatformen_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
+/**
+ * Page callback for settings.
+ */
+function cvr_serviceplatformen_settings() {
+  $cvr = variable_get('cvr_serviceplatformen_test_cvr');
+  $output = '';
+
+  // Outputting information from test CVR.
+  if ($cvr != '') {
+    $message = cvr_serviceplatformen_query_info($cvr);
+
+    if ($message['status']) {
+      $output = '<div style="font-size: 15px; color : green"><b>Succeed</b></div>';
+
+      $output .= '<div> Test CVR nr. ' . $cvr . '<br />';
+      foreach ($message as $key => $item) {
+        if ($key != 'status') {
+          $output .= $key . ': ' . $item . '<br />';
+        }
+      }
+      $output .= '</div>';
+    }
+    else {
+      $output = '<b style = "color : red">Error: ' . $message['text'] . '</b>';
+    }
+    variable_set('cvr_serviceplatformen_test_cvr', '');
+  }
+
+  $form['mode_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Mode'),
+  );
+  $form['mode_fieldset']['cvr_serviceplatformen_mode_selector'] = array(
+    '#type' => 'radios',
+    '#title' => t('Mode selector'),
+    '#default_value' => variable_get('cvr_serviceplatformen_mode_selector', 0),
+    '#options' => array(0 => t('Live'), 1 => t('Test')),
+  );
+
+  $form['test_cvr_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Test CVR'),
+  );
+  $form['test_cvr_fieldset']['cvr_serviceplatformen_test_cvr'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Test CVR nr.'),
+  );
+  $form['test_cvr_fieldset']['test_serviceplatformen_function'] = array(
+    '#type' => 'item',
+    '#markup' => $output,
+  );
+
+  $form['cvr'] = array(
+    '#title' => 'CVR data',
+    '#type' => 'fieldset',
+  );
+
+  $form['cvr']['cvr_serviceplatformen_serviceagreementuuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Serviceaftale UUID',
+    '#default_value' => variable_get('cvr_serviceplatformen_serviceagreementuuid', ''),
+  );
+
+  $form['cvr']['cvr_serviceplatformen_serviceuuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service UUID',
+    '#default_value' => variable_get('cvr_serviceplatformen_serviceuuid', ''),
+    '#description' => t('ex. c0daecde-e278-43b7-84fd-477bfeeea027'),
+  );
+
+  $form['cvr']['cvr_serviceplatformen_wsdl'] = array(
+    '#type' => 'textfield',
+    '#maxlength' => 500,
+    '#title' => 'Service WSDL location',
+    '#default_value' => variable_get('cvr_serviceplatformen_wsdl', ''),
+    '#description' => t('ex. CVROnline-SF1530/wsdl/token/OnlineService.wsdl, relative path would be automatically converted to absolute path'),
+  );
+
+  $form['cvr']['cvr_serviceplatformen_location'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service location (live)',
+    '#default_value' => variable_get('cvr_serviceplatformen_location', ''),
+    '#description' => t('ex. https://prod.serviceplatformen.dk/service/CVR/Online/2'),
+  );
+
+  $form['cvr']['cvr_serviceplatformen_location_test'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Service location (test)',
+    '#default_value' => variable_get('cvr_serviceplatformen_location_test', ''),
+    '#description' => t('ex. https://exttest.serviceplatformen.dk/service/CVR/Online/2'),
+  );
+
+  $form['cvr_serviceplatformen_usersystemuuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'System UUID',
+    '#default_value' => variable_get('cvr_serviceplatformen_usersystemuuid', ''),
+  );
+
+  $form['cvr_serviceplatformen_useruuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Kommune UUID',
+    '#default_value' => variable_get('cvr_serviceplatformen_useruuid', ''),
+  );
+
+  $form['cvr_serviceplatformen_accountinginfo'] = array(
+    '#type' => 'textfield',
+    '#title' => 'AccountingInfo',
+    '#default_value' => variable_get('cvr_serviceplatformen_accountinginfo', ''),
+  );
+
+  $form['cvr_serviceplatformen_certfile_passphrase'] = array(
+    '#type' => 'password',
+    '#title' => 'Certfile passphrase',
+    '#default_value' => variable_get('cvr_serviceplatformen_certfile_passphrase', ''),
+  );
+
+  $form['cvr_serviceplatformen_certfile'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Certfile (live)',
+    '#default_value' => variable_get('cvr_serviceplatformen_certfile', ''),
+  );
+
+  $form['cvr_serviceplatformen_certfile_test'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Certfile (test)',
+    '#default_value' => variable_get('cvr_serviceplatformen_certfile_test', ''),
+  );
+
+  $form = system_settings_form($form);
+  array_unshift($form['#submit'], 'cvr_serviceplatformen_settings_submit');
+
+  return $form;
+}
+
+/**
+ * Extra submit handler for serviceplatformen settings.
+ *
+ * Resets the test CVR as well as handles
+ * the relative/absolute wsdl path location.
+ */
+function cvr_serviceplatformen_settings_submit(&$form, &$form_state) {
+  if ($form_state['values']['cvr_serviceplatformen_certfile_passphrase'] == '') {
+    unset($form_state['values']['cvr_serviceplatformen_certfile_passphrase']);
+  }
+
+  if ($cvr_serviceplatformen_wsdl = $form_state['values']['cvr_serviceplatformen_wsdl']) {
+    // If it is relative URL make is absolute.
+    if (substr($cvr_serviceplatformen_wsdl, 0, 4) !== "http") {
+      global $base_url, $base_path;
+      $form_state['values']['cvr_serviceplatformen_wsdl'] = $base_url . $base_path . drupal_get_path('module', 'cvr_serviceplatformen') . '/' . $cvr_serviceplatformen_wsdl;
+    }
+
+  }
+}
+
+/**
+ * Translates the fetch CVR information to a nice looking array.
+ *
+ * @cpr
+ *  String - CVR
+ *
+ * @return array
+ *   [mode] => test/live
+ *   [status] => TRUE/FALSE
+ *   [cvr] => CVR code,
+ *   [company_name] => Name of the organization,
+ *   [company_street] => Street name,
+ *   [company_house_nr] => House nr,
+ *   [company_floor] => Floor nr,
+ *   [company_zipcode] => ZIP code
+ *   [company_city] => City,
+ */
+function cvr_serviceplatformen_query_info($cvr) {
+  $message = cvr_serviceplatformen_get_legal_unit($cvr);
+
+  if ($message['status']) {
+    return array(
+      'mode' => variable_get('cvr_serviceplatformen_mode_selector') ? 'test' : 'live',
+      'status' => TRUE,
+      'cvr' => $message['LegalUnitIdentifier'],
+      'company_name' => $message['LegalUnitName']->name,
+      'company_street' => $message['AddressOfficial']->AddressPostalExtended->StreetName,
+      'company_house_nr' => $message['AddressOfficial']->AddressPostalExtended->StreetBuildingIdentifier,
+      'company_floor' => $message['AddressOfficial']->AddressPostalExtended->FloorIdentifier,
+      'company_zipcode' => $message['AddressOfficial']->AddressPostalExtended->PostCodeIdentifier,
+      'company_city' => $message['AddressOfficial']->AddressPostalExtended->DistrictName,
+    );
+  }
+  else {
+    return $message;
+  }
+}

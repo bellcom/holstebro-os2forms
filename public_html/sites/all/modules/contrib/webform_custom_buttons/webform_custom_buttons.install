@@ -1,0 +1,61 @@
+<?php
+/**
+ * @file
+ * 
+ * Alter Webform table schema to add configuration of submit buttons (first. intermediate) to a webform.
+ */
+
+/**
+ * Implements hook_schema_alter().
+ */
+function webform_custom_buttons_schema_alter(&$schema) {
+  // Define our additional fields.
+  if (isset($schema['webform'])) {
+    // Declare new column for webform_ajax property.
+    $schema['webform']['fields']['first_button_text'] = array(
+      'description' => 'Value of the first button text in a multistep form.',
+      'type' => 'varchar',
+      'length' => '255',
+      'not null' => FALSE,
+      'default' => 'Next',
+    );
+    $schema['webform']['fields']['next_button_text'] = array(
+      'description' => 'Value of the intermediate button texts in a multistep form.',
+      'type' => 'varchar',
+      'length' => '255',
+      'not null' => FALSE,
+      'default' => 'Next',
+    );
+    // the submit button text is provided by the webform module, field: submit_button_text
+  }
+}
+
+/**
+ * Implements hook_install().
+ */
+function webform_custom_buttons_install() {
+  // Update schema. Add our additional fields.
+  $schema = array('webform' => array());
+  webform_custom_buttons_schema_alter($schema);
+  foreach ($schema as $table => $table_def) {
+    foreach ($table_def['fields'] as $field => $spec) {
+      if (!db_field_exists($table, $field)) {
+        db_add_field($table, $field, $spec);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function webform_custom_buttons_uninstall() {
+  // Update schema. Drop our additional fields.
+  $schema = array('webform' => array());
+  webform_custom_buttons_schema_alter($schema);
+  foreach ($schema as $table => $table_def) {
+    foreach ($table_def['fields'] as $field => $spec) {
+      db_drop_field($table, $field);
+    }
+  }
+}
