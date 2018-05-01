@@ -1,3 +1,3 @@
 [submodule "public_html/sites/all/modules/custom/os2forms_frontend"]
 	path = public_html/sites/all/modules/custom/os2forms_frontend
-	url = git@github.com:OS2Forms/os2forms_frontend.git
+url=https://github.com/OS2Forms/os2forms_frontend.git
