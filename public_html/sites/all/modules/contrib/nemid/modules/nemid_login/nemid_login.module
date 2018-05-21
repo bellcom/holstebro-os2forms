@@ -211,17 +211,36 @@ function _nemid_login_verify() {
 
         $certificate = $nemid->checkAndReturnCertificate($_POST['response'], FALSE, $trustedrootdigests, $disableocspcheck);
         $subject = end($certificate['tbsCertificate']['subject']);
-        $pid = $subject['serialNumber'];
-        $config = _nemid_login_get_config_object();
-        $cpr = $nemid->pidCprRequest($config, $pid);
 
-        // Use serviceplatform to get address and other info.
-        if (module_exists('vcv_serviceplatformen')) {
-          $message = vcv_serviceplatformen_get_address($cpr);
-          $message['cpr'] = $cpr;
+        // Check if PID can be fetched.
+        if (preg_match('/^PID:[0-9|-]*$/i', $subject['serialNumber'])) {
+          $pid = $subject['serialNumber'];
+          $config = _nemid_login_get_config_object();
+          $cpr = $nemid->pidCprRequest($config, $pid);
 
-          $_SESSION['nemid_login']['message'] = $message;
+          // Use serviceplatform to get address and other info.
+          if ($cpr && module_exists('vcv_serviceplatformen')) {
+            $message = vcv_serviceplatformen_get_address($cpr);
+            $message['cpr'] = $cpr;
+
+            $_SESSION['nemid_login']['message'] = $message;
+          }
         }
+        // Check if CVR can be fetched.
+        elseif (preg_match('/.*CVR:([0-9]*).*RID:([0-9]*)/i', $subject['serialNumber'], $match)) {
+          $cvr = $match[1];
+          $rid = $match[2];
+
+          if ($cvr && module_exists('cvr_serviceplatformen')) {
+            $message = cvr_serviceplatformen_query_info($cvr);
+            if ($message['status']) {
+              $message['rid'] = $rid;
+
+              $_SESSION['nemid_login']['message'] = $message;
+            }
+          }
+        }
+
         if (arg(0) == 'nemid' && arg(1) == 'verify') {
           drupal_goto('<front>');
         }
