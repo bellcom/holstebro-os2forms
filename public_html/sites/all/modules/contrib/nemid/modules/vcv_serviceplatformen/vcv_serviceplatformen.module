@@ -112,9 +112,10 @@ function vcv_serviceplatformen_settings() {
 
   $form['stam']['vcv_serviceplatformen_wsdl'] = array(
     '#type' => 'textfield',
+    '#maxlength' => 500,
     '#title' => 'Service WSDL location',
     '#default_value' => variable_get('vcv_serviceplatformen_wsdl', ''),
-    '#description' => t('ex. https://exttestwww.serviceplatformen.dk/administration/wsdl/CPRBasicInformationService.wsdl'),
+    '#description' => t('ex. CPRBasicInformationService/CPRBasicInformationService.wsdl, relative path would be automatically converted to absolute path'),
   );
 
   $form['stam']['vcv_serviceplatformen_location'] = array(
@@ -179,6 +180,15 @@ function vcv_serviceplatformen_settings() {
 function vcv_serviceplatformen_settings_submit(&$form, &$form_state) {
   if ($form_state['values']['vcv_serviceplatformen_certfile_passphrase'] == '') {
     unset($form_state['values']['vcv_serviceplatformen_certfile_passphrase']);
+  }
+
+  if ($vcv_serviceplatformen_wsdl = $form_state['values']['vcv_serviceplatformen_wsdl']) {
+    // If it is relative URL make is absolute.
+    if (substr($vcv_serviceplatformen_wsdl, 0, 4) !== "http") {
+      global $base_url, $base_path;
+      $form_state['values']['vcv_serviceplatformen_wsdl'] = $base_url . $base_path . drupal_get_path('module', 'vcv_serviceplatformen') . '/' . $vcv_serviceplatformen_wsdl;
+    }
+
   }
 }
 

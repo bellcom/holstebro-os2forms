@@ -5,8 +5,8 @@ core = 7.x
 
 dependencies[] = nemid
 
-; Information added by Drupal.org packaging script on 2018-04-04
-version = "7.x-1.0-rc1"
+; Information added by Drupal.org packaging script on 2018-09-06
+version = "7.x-1.0-rc1+2-dev"
 core = "7.x"
 project = "nemid"
-datestamp = "1522850531"
+datestamp = "1536228501"
