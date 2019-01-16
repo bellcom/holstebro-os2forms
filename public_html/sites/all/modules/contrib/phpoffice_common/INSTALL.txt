@@ -1,0 +1,5 @@
+ - Download PHPOffice-Common library (https://github.com/PHPOffice/Common), unzip and rename folder to "PHPOffice-Common".
+ - Put the folder in a libraries directory (example: sites/all/libraries/PHPOffice-Common).
+ - Install and enable Libraries API 2.x (https://drupal.org/project/libraries).
+ - Install and enable X Autoload (https://drupal.org/project/xautoload).
+ - Install and enable PHPOffice-Common module.

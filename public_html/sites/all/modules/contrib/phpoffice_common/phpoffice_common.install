@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Check installation requirements.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function phpoffice_common_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    $t       = get_t();
+    $lib     = $t('PHPOffice-Common library');
+    $library = libraries_detect('PHPOffice-Common');
+
+    if ($library && !empty($library['installed'])) {
+      $requirements['PHPOffice-Common'] = array(
+        'title'    => $lib,
+        'value'    => $library['version'],
+        'severity' => REQUIREMENT_OK,
+      );
+    }
+    else {
+      $requirements['PHPOffice-Common'] = array(
+        'title'       => $lib,
+        'value'       => $library ? $library['error'] : $t('Not found'),
+        'description' => $library ? $library['error message'] : '',
+        'severity'    => REQUIREMENT_ERROR,
+      );
+    }
+  }
+
+  return $requirements;
+}

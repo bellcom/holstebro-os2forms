@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Check installation requirements.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function phpword_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    $t           = get_t();
+    $phpword_lib = $t('PHPWord library');
+    $library     = libraries_detect('PHPWord');
+
+    dpm($library['installed']);
+
+    if ($library && !empty($library['installed'])) {
+      $requirements['phpword'] = array(
+        'title'    => $phpword_lib,
+        'value'    => $library['version'],
+        'severity' => REQUIREMENT_OK,
+      );
+    }
+    else {
+      $requirements['phpword'] = array(
+        'title'       => $phpword_lib,
+        'value'       => $library ? $library['error'] : $t('Not found'),
+        'description' => $library ? $library['error message'] : '',
+        'severity'    => REQUIREMENT_ERROR,
+      );
+    }
+  }
+
+  return $requirements;
+}

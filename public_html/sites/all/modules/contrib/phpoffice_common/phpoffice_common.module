@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * The module file.
+ *
+ * Implements main module hooks.
+ */
+
+/**
+ * Implements hook_libraries_info().
+ */
+function phpoffice_common_libraries_info() {
+  $libraries['PHPOffice-Common'] = array(
+    'name'              => 'PHPOffice-Common',
+    'vendor url'        => 'https://github.com/PHPOffice/Common',
+    'download url'      => 'https://github.com/PHPOffice/Common',
+    'version arguments' => array(
+      'file'    => 'VERSION',
+      'pattern' => '/(\d+\.\d+\.\d+)/',
+      'lines'   => 1,
+    ),
+    'xautoload'         => function ($adapter) {
+      /**
+       * @var \Drupal\xautoload\Adapter\LocalDirectoryAdapter $adapter
+       *   An adapter object that can register stuff into the class loader.
+       */
+      $adapter->composerJson('composer.json');
+    },
+  );
+
+  return $libraries;
+}

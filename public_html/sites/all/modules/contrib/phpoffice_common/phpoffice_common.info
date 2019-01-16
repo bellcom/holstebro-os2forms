@@ -1,0 +1,15 @@
+name           = PHPOffice-Common
+description    = Provides an API for using the <a href="https://github.com/PHPOffice/Common" target="_blank">PHPOffice-Common</a> library.
+core           = 7.x
+
+php            = 5.3
+
+dependencies[] = libraries
+dependencies[] = xautoload
+
+; Information added by Drupal.org packaging script on 2017-09-14
+version = "7.x-1.4"
+core = "7.x"
+project = "phpoffice_common"
+datestamp = "1505385551"
+

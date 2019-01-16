@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * @file
+ * Provides a webform component using google places api.
+ */
+
+/**
+ * Implements hook_webform_component_info().
+ */
+function places_api_webform_autocomplete_webform_component_info() {
+  $components = array();
+  $components['google_places_ac'] = array(
+    'label' => t('Google Places Autocomplete'),
+    'description' => t('A text field with Google Places API Autocomplete'),
+    'features' => array(
+      'csv' => TRUE,
+      'email' => TRUE,
+      'email_address' => FALSE,
+      'email_name' => FALSE,
+      'required' => FALSE,
+      'title_display' => FALSE,
+      'title_inline' => FALSE,
+      'conditional' => FALSE,
+      'group' => FALSE,
+      'spam_analysis' => FALSE,
+      'attachment' => FALSE,
+    ),
+    'file' => 'components/google_places_ac.inc',
+  );
+  return $components;
+}
+
+/**
+ * Returns an array of configurable options used by places API.
+ */
+function places_api_webform_autocomplete_get_extra_fields() {
+  $extra_fields = array(
+    'offset' => t('Offset'),
+    'location' => t('Location'),
+    'radius' => t('Radius'),
+    'language' => t('Language'),
+    'type' => t('Type'),
+    'components' => t('Components'),
+  );
+  return $extra_fields;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function places_api_webform_autocomplete_menu() {
+  $items['places/webform_autocomplete/%node/%'] = array(
+    'title' => 'Places webform autocomplete',
+    'page callback' => 'places_api_webform_autocomplete',
+    'page arguments' => array(2, 3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Menu callback, returns a json string of suggestions from the API.
+ *
+ * @param object $node
+ *   The webform node.
+ * @param int $cid
+ *   The webform component id.
+ * @param string $string
+ *   The textfield input we're sending to the API.
+ */
+function places_api_webform_autocomplete($node, $cid, $string) {
+  global $language;
+  $matches = array();
+  if ($string) {
+
+    // Get the Google API key.
+    $api_key = variable_get('places_api_autocomplete_key', NULL);
+
+    // Build a new cache object, this allows us to cache queries locally.
+    $cache_object = new PlacesApiAutocompleteCacheDrupal();
+
+    $options = variable_get('places_api_autocomplete_options', places_api_autocomplete_get_default_options());
+    if (!empty($node->webform['components'][$cid])) {
+      $components = $node->webform['components'][$cid];
+      $extra_fields = places_api_webform_autocomplete_get_extra_fields();
+      foreach ($extra_fields as $key => $title) {
+        if (!empty($components['extra']["field_$key"])) {
+          $options[$key] = $components['extra']["field_$key"];
+        }
+      }
+    }
+
+    // Add the active language as a parameter to get the results in the site's
+    // active language.
+    if (empty($options['language']) && !empty($language->language)) {
+      $options['language'] = $language->language;
+    }
+    try {
+      // Instantiate the autocomplete object.
+      $places_api = new PlacesApiAutocomplete($api_key, $cache_object, $options);
+
+      // Perform the actual search.
+      $result = $places_api->search($string);
+
+      // Map the results in the format drupal autocomplete API needs it.
+      foreach ($result as $place) {
+        $matches[$place->description] = check_plain($place->description);
+      }
+    }
+    catch (Exception $e) {
+      // Search failed, log error message.
+      watchdog('places_api_webform_autocomplete', $e->getMessage(), array(), WATCHDOG_ERROR);
+      return drupal_json_output(array());
+    }
+  }
+
+  // Return the matches in json format, and stop the page execution.
+  drupal_json_output($matches);
+}
