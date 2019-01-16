@@ -16,8 +16,6 @@ function phpword_requirements($phase) {
     $phpword_lib = $t('PHPWord library');
     $library     = libraries_detect('PHPWord');
 
-    dpm($library['installed']);
-
     if ($library && !empty($library['installed'])) {
       $requirements['phpword'] = array(
         'title'    => $phpword_lib,
