@@ -472,6 +472,6 @@ function nemid_login_preprocess_nemid_login_block(&$vars) {
 
   $settings = _nemid_login_get_settings();
   $vars['settings'] = $settings;
-  drupal_add_js(array('nemidLogin' => $settings), array('type' => 'setting'));
+  drupal_add_js(array('nemidLoginSettings' => $settings), array('type' => 'setting'));
   drupal_add_js(drupal_get_path('module', 'nemid_login') . '/nemid_login.js');
 }

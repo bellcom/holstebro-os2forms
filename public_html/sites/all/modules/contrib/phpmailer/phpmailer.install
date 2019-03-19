@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  */
 function phpmailer_requirements($phase) {
   $requirements = array();
@@ -15,7 +15,7 @@ function phpmailer_requirements($phase) {
 
   if ($phase == 'runtime' && phpmailer_library_exists()) {
     $mail = new PHPMailer();
-    $required_version = '5.2.21';
+    $required_version = '5.2.26';
     $installed_version = $mail->Version;
     $requirements['phpmailer'] = array(
       'title' => $t('PHPMailer library'),
@@ -58,24 +58,77 @@ function phpmailer_requirements($phase) {
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_enable().
+ */
+function phpmailer_enable() {
+  if (!phpmailer_enabled() && !(module_exists('mimemail') && variable_get('mimemail_engine', 'mimemail') == 'phpmailer')) {
+    $t = get_t();
+    drupal_set_message($t('PHPMailer has been installed, but is currently disabled. <a href="@settings-url">Configure it now</a>.', array('@settings-url' => url('admin/config/system/phpmailer'))));
+  }
+
+  if (module_exists('mailsystem')) {
+    mailsystem_set(array('phpmailer' => 'DrupalPHPMailer'));
+  }
+}
+
+/**
+ * Implements hook_disable().
+ */
+function phpmailer_disable() {
+  if (phpmailer_enabled()) {
+    // Remove PHPMailer from all mail keys it is configured for.
+    $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+    foreach ($mail_system as $key => $class) {
+      if ($class == 'DrupalPHPMailer') {
+        if ($key != 'default-system') {
+          unset($mail_system[$key]);
+        }
+        else {
+          $mail_system[$key] = 'DefaultMailSystem';
+        }
+      }
+    }
+    variable_set('mail_system', $mail_system);
+
+    variable_del('smtp_on');
+    drupal_set_message(t('PHPMailer has been disabled.'));
+  }
+  if (module_exists('mimemail') && variable_get('mimemail_engine', 'mimemail') == 'phpmailer') {
+    variable_del('mimemail_engine');
+    drupal_set_message(t('MimeMail e-mail engine has been reset to default.'), 'warning');
+  }
+
+  if (module_exists('mailsystem')) {
+    mailsystem_clear(array('phpmailer' => 'DrupalPHPMailer'));
+  }
+}
+
+/**
+ * Implements hook_uninstall().
  */
 function phpmailer_uninstall() {
   $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
   $mail_system['default-system'] = 'DefaultMailSystem';
   variable_set('mail_system', $mail_system);
 
-  variable_del('smtp_on');
-  variable_del('smtp_host');
-  variable_del('smtp_hostbackup');
-  variable_del('smtp_port');
-  variable_del('smtp_protocol');
-  variable_del('smtp_fromname');
-  variable_del('smtp_username');
-  variable_del('smtp_password');
-  variable_del('smtp_keepalive');
+  variable_del('smtp_always_replyto');
+  variable_del('smtp_auth_type');
   variable_del('smtp_debug');
   variable_del('smtp_debug_log');
+  variable_del('smtp_encode_headers');
+  variable_del('smtp_fromname');
+  variable_del('smtp_hide_password');
+  variable_del('smtp_host');
+  variable_del('smtp_hostbackup');
+  variable_del('smtp_keepalive');
+  variable_del('smtp_on');
+  variable_del('smtp_password');
+  variable_del('smtp_port');
+  variable_del('smtp_protocol');
+  variable_del('smtp_username');
+  variable_del('ssl_verify_peer');
+  variable_del('ssl_verify_peer_name');
+  variable_del('ssl_allow_self_signed');
 }
 
 /**

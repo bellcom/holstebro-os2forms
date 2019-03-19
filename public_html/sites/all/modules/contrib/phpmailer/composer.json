@@ -3,7 +3,7 @@
   "type": "drupal-module",
   "description": "Integrates the PHPMailer library for SMTP e-mail delivery.",
   "require": {
-    "phpmailer/phpmailer": ">=5.2.21"
+    "phpmailer/phpmailer": "^5.2.26"
   },
   "license": "GPL-2.0+",
   "homepage": "https://drupal.org/project/phpmailer",

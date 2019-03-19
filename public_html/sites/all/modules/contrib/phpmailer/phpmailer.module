@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
 function phpmailer_permission() {
   return array(
@@ -18,7 +18,7 @@ function phpmailer_permission() {
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function phpmailer_menu() {
   $items['admin/config/system/phpmailer'] = array(
@@ -41,7 +41,7 @@ function phpmailer_menu() {
 }
 
 /**
- * Implementation of hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
 function phpmailer_form_mimemail_admin_settings_alter(&$form, &$form_state) {
   // Hide the Mime Mail global enabler setting if phpmailer is used to deliver
@@ -71,7 +71,7 @@ function phpmailer_enabled() {
 }
 
 /**
- * Implementation of hook_mailengine().
+ * Implements hook_mailengine().
  */
 function phpmailer_mailengine($op, $message = array()) {
   if (!phpmailer_library_exists()) {
@@ -103,11 +103,11 @@ function phpmailer_mailengine($op, $message = array()) {
 /**
  * Extract address and optional display name of an e-mail address.
  *
- * @param $string
+ * @param string $string
  *   A string containing one or more valid e-mail address(es) separated with
  *   commas.
  *
- * @return
+ * @return array
  *   An array containing all found e-mail addresses split into mail and name.
  *
  * @see http://tools.ietf.org/html/rfc5322#section-3.4
@@ -171,52 +171,6 @@ function phpmailer_preview_access() {
     return user_access('administer phpmailer settings');
   }
   return FALSE;
-}
-
-/**
- * Implementation of hook_enable().
- */
-function phpmailer_enable() {
-  if (!phpmailer_enabled() && !(module_exists('mimemail') && variable_get('mimemail_engine', 'mimemail') == 'phpmailer')) {
-    $t = get_t();
-    drupal_set_message($t('PHPMailer has been installed, but is currently disabled. <a href="@settings-url">Configure it now</a>.', array('@settings-url' => url('admin/config/system/phpmailer'))));
-  }
-
-  if (module_exists('mailsystem')) {
-    mailsystem_set(array('phpmailer' => 'DrupalPHPMailer'));
-  }
-}
-
-/**
- * Implementation of hook_disable().
- */
-function phpmailer_disable() {
-  if (phpmailer_enabled()) {
-    // Remove PHPMailer from all mail keys it is configured for.
-    $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
-    foreach ($mail_system as $key => $class) {
-      if ($class == 'DrupalPHPMailer') {
-        if ($key != 'default-system') {
-          unset($mail_system[$key]);
-        }
-        else {
-          $mail_system[$key] = 'DefaultMailSystem';
-        }
-      }
-    }
-    variable_set('mail_system', $mail_system);
-
-    variable_del('smtp_on');
-    drupal_set_message(t('PHPMailer has been disabled.'));
-  }
-  if (module_exists('mimemail') && variable_get('mimemail_engine', 'mimemail') == 'phpmailer') {
-    variable_del('mimemail_engine');
-    drupal_set_message(t('MimeMail e-mail engine has been reset to default.'), 'warning');
-  }
-
-  if (module_exists('mailsystem')) {
-    mailsystem_clear(array('phpmailer' => 'DrupalPHPMailer'));
-  }
 }
 
 /**

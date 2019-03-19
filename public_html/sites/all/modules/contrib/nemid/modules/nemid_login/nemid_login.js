@@ -4,7 +4,6 @@
    */
   Drupal.behaviors.nemidLogin = {
     attach: function (context) {
-
       function onNemIDMessage(e) {
         var event = e || event;
 
@@ -16,7 +15,7 @@
 
           postMessage.command = "parameters";
           postMessage.content = htmlParameters;
-          win.postMessage(JSON.stringify(postMessage), Drupal.settings.nemidLogin.danid_baseurl);
+          win.postMessage(JSON.stringify(postMessage), Drupal.settings.nemidLoginSettings.danid_baseurl);
         }
 
         if (message.command === "changeResponseAndSubmit") {
@@ -26,9 +25,13 @@
       }
 
       if (window.addEventListener) {
-        window.addEventListener("message", onNemIDMessage);
+          jQuery('body').once('onNemIDMessage', function() {
+              window.addEventListener("message", onNemIDMessage);
+          });
       } else if (window.attachEvent) {
-        window.attachEvent("onmessage", onNemIDMessage);
+          jQuery('body').once('onNemIDMessage', function() {
+              window.attachEvent("onmessage", onNemIDMessage);
+          });
       }
     }
   }

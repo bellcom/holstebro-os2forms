@@ -9,8 +9,8 @@ dependencies[] = webform (>=7.x-4.12)
 dependencies[] = webform_ssl
 dependencies[] = webform_encrypt
 
-; Information added by Drupal.org packaging script on 2018-09-06
-version = "7.x-1.0-rc1+2-dev"
+; Information added by Drupal.org packaging script on 2018-09-18
+version = "7.x-1.0-rc1+3-dev"
 core = "7.x"
 project = "nemid"
-datestamp = "1536228501"
+datestamp = "1537274885"

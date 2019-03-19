@@ -53,7 +53,7 @@ function webform_steps_form_webform_client_form_alter(&$form, &$form_state, $for
     );
     if ($page < $current_page) {
       $button['#validate'] = array();
--     $button['#attributes']['formnovalidate'] = 'formnovalidate';
+      $button['#attributes']['formnovalidate'] = 'formnovalidate';
     }
     if ($ajax) {
       // @see webform_ajax_form_webform_client_form_alter().
