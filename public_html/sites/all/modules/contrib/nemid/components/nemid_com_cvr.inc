@@ -32,6 +32,9 @@ function _webform_render_nemid_com_cvr($component, $value = NULL, $filter = TRUE
   if (isset($_SESSION['nemid_login']['cvr'])) {
     $element['#default_value'] = $_SESSION['nemid_login']['cvr'];
   }
+  elseif (isset($value[0])) {
+    $element['#default_value'] = $value[0];
+  }
 
   return $element;
 }
