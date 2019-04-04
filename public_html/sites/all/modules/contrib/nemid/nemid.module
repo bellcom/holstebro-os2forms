@@ -50,6 +50,7 @@ function nemid_webform_component_info() {
       'title_inline' => FALSE,
       'conditional' => FALSE,
       'group' => FALSE,
+      'private' => FALSE,
       'spam_analysis' => FALSE,
       'attachment' => FALSE,
     ),
