@@ -3,3 +3,5 @@
 /tmp
 
 /public_html/sites/all/modules/custom/nbproject/private/
+.DS_Store
+*.dd
