@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ * Install the webform autofill attribute module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function webform_autofill_attribute_schema() {
+  $schema = array();
+
+  $schema['webform_autofill_attribute'] = array(
+    'description' => 'Table for storing autofill attributes for webform components.',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'The node identifier of a webform.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'cid' => array(
+        'description' => 'The identifier for this component within this node, starts at 0 for each node.',
+        'type' => 'int',
+        'size' => 'small',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'autofill_attribute' => array(
+        'description' => 'The attribute to be added to the component id.',
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+    ),
+    'primary key' => array('nid', 'cid'),
+  );
+
+  return $schema;
+}

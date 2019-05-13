@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * Webform autofill attribute tests.
+ */
+
+module_load_include('test', 'webform', 'tests/webform');
+
+class WebformAutofillAttributeTestCase extends WebformTestCase {
+
+  /**
+   * Implements getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Webform autofill attribute'),
+      'description' => t('Add an autofill attribute to a webform component.'),
+      'group' => t('Webform'),
+    );
+  }
+
+  /**
+   * Test that the autocomplete attribute is correctly added to our component.
+   */
+  function testWebformFormAutofillAttribute() {
+    $webform_node = $this->testWebformForm();
+    $this->drupalGet('node/' . $webform_node->nid);
+    $message = 'Autofill with attribute ' . $this->getTestAttribute() . ' was found on the webform node.';
+    $this->assertRaw('autocomplete="' . $this->getTestAttribute() . '"', $message);
+  }
+
+  /**
+   * Returns the attribute we are using to test against.
+   * 
+   * @return string
+   *   The value for the attribute.
+   */
+  function getTestAttribute() {
+    return 'fname';
+  }
+
+  /**
+   * Overrides the testWebformComponents function in webform.test with our needed component.
+   *
+   * @return array
+   *   An array of each component settings.
+   */
+  function testWebformComponents() {
+    if (isset($this->_webform_components)) {
+      return $this->_webform_components;
+    }
+
+    $this->_webform_components = array(
+      // Test textfield components.
+      'textfield' => array(
+        'component' => array(
+          'form_key' => 'textfield',
+          'name' => 'Textfield',
+          'type' => 'textfield',
+          'value' => '',
+          'required' => '0',
+          'pid' => '0',
+          'extra' => array(
+            'attributes' => array(
+              'autocomplete' => $this->getTestAttribute(),
+            ),
+          ),
+          'weight' => '0',
+        ),
+        'sample values' => '',
+        'database values' => array(''),
+        'database default values' => array(''),
+      ),
+    );
+
+    return $this->_webform_components;
+  }
+}

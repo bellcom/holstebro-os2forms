@@ -1,0 +1,15 @@
+name = Webform tracking
+description = Tracks and tags webform submissions
+package = Webform
+core = 7.x
+
+dependencies[] = psr0
+dependencies[] = webform
+
+scripts[] = webform_tracking.js
+
+; Information added by Drupal.org packaging script on 2019-02-05
+version = "7.x-2.2"
+core = "7.x"
+project = "webform_tracking"
+datestamp = "1549381384"

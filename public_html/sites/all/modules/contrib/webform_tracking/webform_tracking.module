@@ -1,0 +1,144 @@
+<?php
+/**
+ * @file
+ * Adds user-tracking capabilities to webform.
+ */
+
+use \Drupal\webform_tracking\Extractor;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds an option to decide if DNT should be respected to webforms admin
+ * settings.
+ */
+function webform_tracking_form_webform_admin_settings_alter(&$form, &$form_state, $form_id) {
+  $form['webform_tracking'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Webform Tracking'),
+    '#collapsible' => TRUE,
+    '#weight' => 10,
+  );
+
+  $form['webform_tracking']['webform_tracking_respect_dnt'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Respect <a href="http://www.mozilla.org/en-US/dnt/">Do Not Track</a>'),
+    '#default_value' => variable_get('webform_tracking_respect_dnt', TRUE),
+  );
+
+  array_unshift($form['#submit'], 'webform_tracking_webform_admin_settings_submit');
+}
+
+/**
+ * Submit handler to set the variable 'webform_tracking_respect_dnt'.
+ */
+function webform_tracking_webform_admin_settings_submit(&$form, &$form_state) {
+  variable_set('webform_tracking_respect_dnt', $form_state['values']['webform_tracking_respect_dnt']);
+}
+
+/**
+ * Implements hook_init().
+ *
+ * Add our javascript settings to every page.
+ */
+function webform_tracking_init() {
+  drupal_add_library('system', 'jquery.cookie', TRUE);
+  $settings['webform_tracking'] = [
+    'respect_dnt' => variable_get('webform_tracking_respect_dnt', TRUE),
+    'base_url' => $GLOBALS['base_url'],
+  ];
+  drupal_add_js($settings, ['type' => 'setting', 'every_page' => TRUE]);
+}
+
+/**
+ * Implements hook_webform_submission_insert().
+ *
+ * Save tracking data along with the submission and update the cookie content.
+ */
+function webform_tracking_webform_submission_insert($node, $submission) {
+  $extractor = Extractor::fromEnv();
+  $cookie = $extractor->addTrackingData($submission);
+  $extractor->insert($submission);
+  // Set new cookie data if possible. hook_webform_submission_insert() can be
+  // triggered in all kinds of situations not only on form submits.
+  if (!headers_sent()) {
+    setcookie('webform_tracking', drupal_json_encode($cookie), 0, '/');
+  }
+}
+
+/**
+ * Implements hook_webform_submission_delete().
+ *
+ * Delete tracking data when the corresponding submission is deleted.
+ */
+function webform_tracking_webform_submission_delete($node, $submission) {
+  db_delete('webform_tracking')
+    ->condition('nid', $node->nid)
+    ->condition('sid', $submission->sid)
+    ->execute();
+}
+
+/**
+ * Implements hook_webform_submission_load().
+ */
+function webform_tracking_webform_submission_load(&$submissions) {
+  $sids = array_keys($submissions);
+  if (empty($sids)) {
+    return;
+  }
+  foreach ($submissions as $submission) {
+    $submission->tracking = (object) Extractor::$parameters;
+  }
+  $result = db_select('webform_tracking', 't')
+    ->fields('t')
+    ->condition('sid', $sids, 'IN')
+    ->execute();
+  foreach ($result as $data) {
+    $sid = $data->sid;
+    unset($data->nid);
+    unset($data->sid);
+    $data->tags = empty($data->tags) ? array() : unserialize($data->tags);
+    $submissions[$sid]->tracking = $data;
+  }
+}
+
+/**
+ * Implements hook_webform_results_download_submission_information_info().
+ */
+function webform_tracking_webform_results_download_submission_information_info() {
+  $p = 'webform_tracking_';
+  return array(
+    $p . 'referer' => t('Referer'),
+    $p . 'external_referer' => t('External referer'),
+    $p . 'form_url' => t('Form URL'),
+    $p . 'tags' => t('Tags'),
+    $p . 'entry_url' => t('Entry URL'),
+    $p . 'refsid' => t('Referring SID'),
+    $p . 'source' => t('Source'),
+    $p . 'medium' => t('Channel'),
+    $p . 'version' => t('Version'),
+    $p . 'other' => t('Other'),
+    $p . 'user_id' => t('User-ID'),
+    $p . 'country' => t('Country'),
+    $p . 'term' => t('Terms'),
+    $p . 'campaign' => t('Campaign'),
+  );
+}
+
+/**
+ * Implements hook_webform_results_download_submission_information_data().
+ */
+function webform_tracking_webform_results_download_submission_information_data($submission, array $options, $serial_start, $row_count) {
+  if (!isset($submission->tracking)) {
+    return;
+  }
+  $data = array();
+  $p = 'webform_tracking_';
+  foreach ($submission->tracking as $key => $value) {
+    $data[$p . $key] = $value;
+  }
+  if (isset($data[$p . 'tags'])) {
+    $data[$p . 'tags'] = implode(', ', $data[$p . 'tags']);
+  }
+  return $data;
+}

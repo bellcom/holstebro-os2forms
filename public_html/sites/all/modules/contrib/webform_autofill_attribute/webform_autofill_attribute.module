@@ -1,0 +1,147 @@
+<?php
+
+/**
+ * @file
+ * Provides the functionality for the webform autofill attribute module.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter() for webform_component_edit_form().
+ */
+function webform_autofill_attribute_form_webform_component_edit_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['display'])) {
+    module_load_include('inc', 'webform_autofill_attribute', 'webform_autofill_attribute_attributes');
+    $form['display']['autofill_attribute'] = array(
+      '#type' => 'select',
+      '#title' => t('Autofill attribute'),
+      '#options' => _webform_autofill_attribute_get_attributes(),
+      '#default_value' => _webform_autofill_attribute_get_component_autofill_attribute($form['#node']->nid, $form['cid']['#value']),
+      '#description' => t('Choose the autofill attribute you would like to have added to the form element'),
+      '#empty_value' => '',
+      '#empty_option' => t('-- none --'),
+    );
+
+    // Add submit handler.
+    $form['#submit'][] = '_webform_autofill_attribute_form_webform_component_edit_form_submit';
+  }
+}
+
+/**
+ * Submit handler to store the selected autofill attribute.
+ *
+ * @param array $form
+ *   Nested array of form elements that comprise the form.
+ * @param array &$form_state
+ *   A keyed array containing the current state of the form.
+ */
+function _webform_autofill_attribute_form_webform_component_edit_form_submit(array $form, array &$form_state) {
+  if (isset($form_state['values']['nid']) && isset($form_state['values']['cid']) && isset($form_state['values']['display']['autofill_attribute'])) {
+    if (!empty($form_state['values']['display']['autofill_attribute'])) {
+
+      // Insert or update the data in the table.
+      db_merge('webform_autofill_attribute')->key(array(
+          'nid' => $form_state['values']['nid'],
+          'cid' => $form_state['values']['cid'],
+        ))->fields(array(
+          'autofill_attribute' => $form_state['values']['display']['autofill_attribute'],
+          'nid' => $form_state['values']['nid'],
+          'cid' => $form_state['values']['cid'],
+        ))->execute();
+    }
+    else {
+
+      // Delete any existing data to keep table size low.
+      db_delete('webform_autofill_attribute')
+        ->condition('nid', $form_state['values']['nid'])
+        ->condition('cid', $form_state['values']['cid'])
+        ->execute();
+    }
+  }
+}
+
+/**
+ * Get a single autofill attribute.
+ *
+ * Get the single autofill attribute by nid and cid by getting
+ * all the node attributes at once for efficiency.
+ *
+ * @param int $nid
+ *   Node object id.
+ * @param int $cid
+ *   Webform component id.
+ *
+ * @return string
+ *   The attribute.
+ */
+function _webform_autofill_attribute_get_component_autofill_attribute($nid, $cid) {
+  $attributes = _webform_autofill_attribute_get_webform_autofill_attributes($nid);
+  if ($attributes && array_key_exists($cid, $attributes)) {
+    return $attributes[$cid];
+  }
+  else {
+    return '';
+  }
+}
+
+/**
+ * Get all attributes for this webform nid.
+ *
+ * @param int $nid
+ *   Node object id.
+ *
+ * @return array
+ *   Attributes keyed by their webform component ids.
+ */
+function _webform_autofill_attribute_get_webform_autofill_attributes($nid) {
+  return db_select('webform_autofill_attribute', 'a')
+    ->fields('a', array('cid', 'autofill_attribute'))
+    ->condition('nid', $nid, '=')
+    ->execute()
+    ->fetchAllKeyed();
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function webform_autofill_attribute_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['#node']) && isset($form['submitted'])) {
+    $autocomplete = FALSE;
+    $nid = $form['#node']->nid;
+    $attributes = _webform_autofill_attribute_get_webform_autofill_attributes($nid);
+    
+    // Add autofill attributes to fields.
+    foreach ($form['submitted'] as &$field) {
+      if (is_array($field) && _webform_autofill_attribute_update_field($field, $attributes)) {
+        $autocomplete = TRUE;
+      }
+    }
+    
+    // If we have added at least one autofill attribute, turn form autocomplete on.
+    if ($autocomplete) {
+      $form['#attributes']['autocomplete'] = 'on';
+    }
+    
+  }
+}
+
+/**
+ * Add the attribute to the field.
+ *
+ * @param array $field
+ *   The form field containing a webform component.
+ * @param array $attributes
+ *   The attributes keyed by webform component ids.
+ *
+ * @return boolean
+ *   Whether or not an autocomplete attribute was added
+ */
+function _webform_autofill_attribute_update_field(array &$field, array $attributes) {
+  if ($attributes && isset($field['#webform_component'])) {
+    $cid = $field['#webform_component']['cid'];
+    if (array_key_exists($cid, $attributes)) {
+      $field['#attributes']['autocomplete'] = $attributes[$cid];
+      return true;
+    }
+  }
+  return false;
+}

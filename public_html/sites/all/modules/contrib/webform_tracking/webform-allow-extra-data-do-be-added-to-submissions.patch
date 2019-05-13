@@ -1,0 +1,98 @@
+diff --git a/includes/webform.report.inc b/includes/webform.report.inc
+index 56a29db..299f277 100644
+--- a/includes/webform.report.inc
++++ b/includes/webform.report.inc
+@@ -180,8 +180,10 @@ function webform_results_table($node, $pager_count = 0) {
+   $header = theme('webform_results_table_header', array('node' => $node));
+   $submissions = webform_get_submissions($node->nid, $header, $pager_count);
+   $total_count = webform_get_submission_count($node->nid);
++  $extra_data = module_invoke_all('webform_results_extra_data', $submissions);
+ 
+-  $output = theme('webform_results_table', array('node' => $node, 'components' => $node->webform['components'], 'submissions' => $submissions, 'total_count' => $total_count, 'pager_count' => $pager_count));
++
++  $output = theme('webform_results_table', array('node' => $node, 'components' => $node->webform['components'], 'submissions' => $submissions, 'extra_data' => $extra_data, 'total_count' => $total_count, 'pager_count' => $pager_count));
+   if ($pager_count) {
+     $output .= theme('pager');
+   }
+@@ -246,6 +248,13 @@ function theme_webform_results_table($variables) {
+       }
+     }
+ 
++    foreach ($variables['extra_data'] as $extra_data) {
++      foreach ($extra_data[$sid] as $key => $value) {
++        $component_headers[] = check_plain($key);
++        $cell[] = check_plain($value);
++      }
++    }
++
+     $rows[] = $cell;
+     unset($cell);
+   }
+@@ -705,6 +714,14 @@ function webform_results_export($node, $format = 'delimited', $options = array()
+     }
+   }
+ 
++  // Get all the required submissions for the download.
++  $filters['nid'] = $node->nid;
++  if (!empty($options['sids'])){
++    $filters['sid'] = $options['sids'];
++  }
++  $submissions = webform_get_submissions($filters);
++  $extra_data_results = module_invoke_all('webform_results_extra_data', $submissions);
++
+   // Open a new Webform exporter object.
+   $exporter = webform_export_create_handler($format, $options);
+ 
+@@ -740,18 +757,19 @@ function webform_results_export($node, $format = 'delimited', $options = array()
+     }
+   }
+ 
++  foreach ($extra_data_results as $extra_data) {
++    foreach (reset($extra_data) as $key => $value) {
++      array_push($header[0], '');
++      array_push($header[1], '');
++      array_push($header[2], $key);
++    }
++  }
++
+   // Add headers to the file.
+   foreach ($header as $row) {
+     $exporter->add_row($handle, $row);
+   }
+ 
+-  // Get all the required submissions for the download.
+-  $filters['nid'] = $node->nid;
+-  if (!empty($options['sids'])){
+-    $filters['sid'] = $options['sids'];
+-  }
+-  $submissions = webform_get_submissions($filters);
+-
+   // Generate a row for each submission.
+   $row_count = 0;
+   $sid = 0;
+@@ -802,6 +820,12 @@ function webform_results_export($node, $format = 'delimited', $options = array()
+       }
+     }
+ 
++    foreach ($extra_data_results as $extra_data) {
++      foreach ($extra_data[$sid] as $key => $value) {
++        $row[] = $value;
++      }
++    }
++
+     // Write data from submissions.
+     $data = $exporter->add_row($handle, $row);
+   }
+diff --git a/webform.module b/webform.module
+index 1bdf84c..d7d7586 100644
+--- a/webform.module
++++ b/webform.module
+@@ -623,7 +623,7 @@ function webform_theme() {
+       'file' => 'includes/webform.report.inc',
+     ),
+     'webform_results_table' => array(
+-      'variables' => array('node' => NULL, 'components' => NULL, 'submissions' => NULL, 'node' => NULL, 'total_count' => NULL, 'pager_count' => NULL),
++      'variables' => array('node' => NULL, 'components' => NULL, 'submissions' => NULL, 'extra_data' => NULL, 'node' => NULL, 'total_count' => NULL, 'pager_count' => NULL),
+       'file' => 'includes/webform.report.inc',
+     ),
+     'webform_results_download_range' => array(

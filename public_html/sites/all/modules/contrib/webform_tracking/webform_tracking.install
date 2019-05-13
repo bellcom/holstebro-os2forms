@@ -1,0 +1,275 @@
+<?php
+
+/**
+ * @file
+ * Schema and installation hooks for webform_tracking module.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function webform_tracking_schema() {
+  return array(
+    'webform_tracking' => array(
+      'description' => 'Table for storing tracking data.',
+      'fields' => array(
+        'nid' => array(
+          'description' => 'The node identifier of a webform.',
+          'type'        => 'int',
+          'unsigned'    => TRUE,
+          'not null'    => TRUE,
+        ),
+        'sid' => array(
+          'description' => 'Submission identifier for this node webform.',
+          'type'        => 'int',
+          'unsigned'    => TRUE,
+          'not null'    => TRUE,
+        ),
+        'referer' => array(
+          'description' => 'The HTTP-Referer.',
+          'type'        => 'text',
+          'size'        => 'medium',
+          'not null'    => FALSE,
+        ),
+        'external_referer' => array(
+          'description' => 'An external referrer submitted via the session.',
+          'type'        => 'text',
+          'size'        => 'medium',
+          'not null'    => FALSE,
+        ),
+        'form_url' => array(
+          'description' => 'The whole URL which requested the webform.',
+          'type'        => 'text',
+          'size'        => 'medium',
+          'not null'    => FALSE,
+        ),
+        'tags' => array(
+          'description' => 'Tags submitted via the session.',
+          'type'        => 'text',
+          'size'      => 'medium',
+          'not null'    => FALSE,
+        ),
+        'entry_url'  => array(
+          'description' => 'first page a user visited',
+          'type'        => 'text',
+          'size'      => 'medium',
+          'not null'    => FALSE,
+        ),
+        'source'      => array(
+          'description' => 'promotion is X (like a tweet)',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'medium'      => array(
+          'description' => 'which channel (like email)',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'version'     => array(
+          'description' => 'version (for split testing)',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'other'       => array(
+          'description' => 'generic, like a number for internal processing',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'user_id'     => array(
+          'description' => 'unique identification of a person',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'country'     => array(
+          'description' => 'the country geoip gives us for this user',
+          'type'        => 'varchar',
+          'length'      => '2',
+          'not null'    => FALSE,
+        ),
+        'term'        => array(
+          'description' => 'keywords for an ad',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'campaign'    => array(
+          'description' => 'name of the current campaign.',
+          'type'        => 'text',
+          'length'      => '1024',
+          'not null'    => FALSE,
+        ),
+        'refsid' => array(
+          'description' => 'referring submission identifier',
+          'type'        => 'int',
+          'unsigned'    => TRUE,
+          'not null'    => FALSE,
+        ),
+      ),
+      'primary key' => array('nid', 'sid'),
+      'indexes' => array('webform_submission_sid' => array('sid')),
+    ),
+  );
+}
+
+/**
+ * Enable session_cache module as replacement for core caching.
+ */
+function webform_tracking_update_1() {
+  module_enable(array('session_cache'));
+}
+
+/**
+ * Add fields for additional tracking data.
+ */
+function webform_tracking_update_2() {
+  $new_fields = array(
+    'entry_page'  => array(
+      'description' => 'first page a user visited',
+      'type'        => 'text',
+      'size'      => 'medium',
+      'not null'    => FALSE,
+    ),
+    'source'      => array(
+      'description' => 'promotion is X (like a tweet)',
+      'type'        => 'text',
+      'length'      => '1024',
+      'not null'    => FALSE,
+    ),
+    'medium'      => array(
+      'description' => 'which channel (like email)',
+      'type'        => 'text',
+      'length'      => '1024',
+      'not null'    => FALSE,
+    ),
+    'version'     => array(
+      'description' => 'version (for split testing)',
+      'type'        => 'text',
+      'length'      => '1024',
+      'not null'    => FALSE,
+    ),
+    'other'       => array(
+      'description' => 'generic, like a number for internal processing',
+      'type'        => 'text',
+      'length'      => '1024',
+      'not null'    => FALSE,
+    ),
+    'user_id'     => array(
+      'description' => 'unique identification of a person',
+      'type'        => 'text',
+      'length'      => '1024',
+      'not null'    => FALSE,
+    ),
+  );
+
+  foreach ($new_fields as $name => $spec) {
+    db_add_field('webform_tracking', $name, $spec);
+  }
+}
+
+
+/**
+ * Rename fields for spelling and consistency reasons.
+ */
+function webform_tracking_update_3() {
+  db_change_field('webform_tracking', 'external_referrer', 'external_referer',
+    array(
+      'description' => 'An external referrer submitted via the session.',
+      'type'        => 'text',
+      'size'        => 'medium',
+      'not null'    => FALSE,
+    ));
+
+  db_change_field('webform_tracking', 'tag', 'tags',
+    array(
+      'description' => 'Tags submitted via the session.',
+      'type'        => 'text',
+      'size'      => 'medium',
+      'not null'    => FALSE,
+    ));
+
+  db_change_field('webform_tracking', 'entry_page', 'entry_url',
+    array(
+      'description' => 'first page a user visited',
+      'type'        => 'text',
+      'size'      => 'medium',
+      'not null'    => FALSE,
+    ));
+}
+
+/**
+ * Add a field for the users country. Function depends on geoip PECL module.
+ */
+function webform_tracking_update_4() {
+  db_add_field('webform_tracking', 'country', array(
+      'description' => 'the country geoip gives us for this user',
+      'type'        => 'text',
+      'length'      => '1024',
+      'not null'    => FALSE,
+    ));
+}
+
+/**
+ * Resize country field to only save iso3166 country codes.
+ */
+function webform_tracking_update_5() {
+  // Delete old data.
+  db_query('UPDATE {webform_tracking} SET country=?', array(''));
+
+  db_change_field('webform_tracking', 'country', 'country',
+    array(
+      'description' => 'the country geoip gives us for this user',
+      'type'        => 'varchar',
+      'length'      => '2',
+      'not null'    => FALSE,
+    ));
+}
+
+/**
+ * Even more data to track. Term & Campaign.
+ */
+function webform_tracking_update_6() {
+  db_add_field('webform_tracking', 'term', array(
+    'description' => 'keywords for an ad',
+    'type'        => 'text',
+    'length'      => '1024',
+    'not null'    => FALSE,
+  ));
+  db_add_field('webform_tracking', 'campaign', array(
+    'description' => 'name of the current campaign.',
+    'type'        => 'text',
+    'length'      => '1024',
+    'not null'    => FALSE,
+  ));
+}
+
+/**
+ * Add index on webform_tracking.sid
+ */
+function webform_tracking_update_7() {
+  db_add_index('webform_tracking', 'webform_submission_sid', array('sid'));
+}
+
+/**
+ * Add field for referring sid.
+ */
+function webform_tracking_update_8() {
+  db_add_field('webform_tracking', 'refsid', array(
+    'description' => 'referring submission identifier',
+    'type'        => 'int',
+    'unsigned'    => TRUE,
+    'not null'    => FALSE,
+  ));
+}
+
+/**
+ * Remove IP-address from tracking data.
+ */
+function webform_tracking_update_9() {
+  db_drop_field('webform_tracking', 'ip_address');
+}
