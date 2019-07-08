@@ -1,0 +1,122 @@
+// |--------------------------------------------------------------------------
+// | Menu
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .menu
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin menu-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.layout__content {
+
+  .menu {
+
+    &,
+    &.nav {
+
+      > li {
+
+        > a {
+          position: relative;
+
+          padding-top: 25px;
+          padding-bottom: 25px;
+
+          font-size: $font-size-large;
+
+          color: $text-color;
+
+          &:after {
+            @extend .fa;
+            position: absolute;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            top: 50%;
+            right: 0;
+
+            content: $fa-var-angle-right;
+
+            margin-top: -20px; // Half the height
+
+            height: 40px;
+            width: 40px;
+
+            color: #fff;
+            background-color: $brand-primary;
+          }
+
+          &:hover {
+            color: $brand-primary;
+            background-color: $body-bg-tertiary;
+          }
+        }
+
+        &.active {
+
+          > a {
+
+            &, &:hover {
+              color: $brand-primary;
+              background-color: #e5e0de;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

@@ -1,0 +1,228 @@
+// |--------------------------------------------------------------------------
+// | Flexy header
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .flexy-header
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// Responsive
+$xs-flexy-header-static-row-first-height: 40px;
+$sm-flexy-header-static-row-first-height: 40px;
+$md-flexy-header-static-row-first-height: 40px;
+$lg-flexy-header-static-row-first-height: 40px;
+
+$xs-flexy-header-static-row-second-height: 50px;
+$sm-flexy-header-static-row-second-height: 80px;
+$md-flexy-header-static-row-second-height: 90px;
+$lg-flexy-header-static-row-second-height: 90px;
+
+$xs-logo-font-size: 20px;
+$sm-logo-font-size: 22px;
+$md-logo-font-size: 28px;
+$lg-logo-font-size: 28px;
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin flexy-header-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.flexy-header--static {
+  z-index: 100;
+  @include box-shadow($flexy-header-sticky-unpinned-box-shadow);
+
+  .flexy-header__row--first {
+    @include flexy-header-mixin-row-height($xs-flexy-header-static-row-first-height);
+
+    background-color: $body-bg-tertiary;
+  }
+
+  .flexy-header__row--second {
+    @include flexy-header-mixin-row-height($xs-flexy-header-static-row-second-height);
+
+    background-color: $body-bg;
+  }
+}
+
+.flexy-header__row--first {
+
+  .flexy-header__secondary-navigation {
+
+    + .flexy-header__election-switcher {
+      margin-left: $grid-gutter-width;
+    }
+  }
+}
+
+.flexy-header__secondary-navigation {
+
+  .flexy-list {
+
+    > * {
+      padding: 0 30px 0 0;
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+
+  a {
+    font-size: $font-size-small;
+
+    color: $text-color;
+  }
+}
+
+.flexy-header__logo {
+  font-size: $xs-logo-font-size;
+
+  &, &:hover, &:focus {
+    color: $text-color;
+
+    text-decoration: none;
+  }
+}
+
+.flexy-header__sidebar-toggle {
+  border: 0;
+  background-color: transparent;
+}
+
+.flexy-header__link {
+  padding: 5px;
+
+  &, &:hover, &:focus {
+    color: $text-color;
+  }
+}
+
+@include input-size('.flexy-header__election-switcher .form-control', $input-height-small, $padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $input-border-radius-small);
+.flexy-header__election-switcher {
+
+  form {
+    @include form-inline();
+  }
+
+  .form-item {
+    display: inline-block;
+
+    margin-bottom: initial;
+
+    + .form-item,
+    + .btn {
+      margin-left: 4px;
+    }
+  }
+
+  .btn {
+    @extend .btn-secondary;
+
+    @include button-size($padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
+  }
+
+  // Makes the elements smaller.
+  // Hijacked from @bootstrap/forms.scss:331
+  .form-control {
+    height: $input-height-small;
+    padding: $padding-small-vertical $padding-small-horizontal;
+    font-size: $font-size-small;
+    line-height: $line-height-small;
+    border-radius: $input-border-radius-small;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {
+
+  .flexy-header--static {
+
+    .flexy-header__row--first {
+      @include flexy-header-mixin-row-height($sm-flexy-header-static-row-first-height);
+    }
+
+    .flexy-header__row--second {
+      @include flexy-header-mixin-row-height($sm-flexy-header-static-row-second-height);
+    }
+  }
+
+  .flexy-header__logo {
+    font-size: $sm-logo-font-size;
+  }
+}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {
+
+  .flexy-header--static {
+
+    .flexy-header__row--first {
+      @include flexy-header-mixin-row-height($md-flexy-header-static-row-first-height);
+    }
+
+    .flexy-header__row--second {
+      @include flexy-header-mixin-row-height($md-flexy-header-static-row-second-height);
+    }
+  }
+
+  .flexy-header__logo {
+    font-size: $md-logo-font-size;
+  }
+}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {
+
+  .flexy-header--static {
+
+    .flexy-header__row--first {
+      @include flexy-header-mixin-row-height($lg-flexy-header-static-row-first-height);
+    }
+
+    .flexy-header__row--second {
+      @include flexy-header-mixin-row-height($lg-flexy-header-static-row-second-height);
+    }
+  }
+
+  .flexy-header__logo {
+    font-size: $lg-logo-font-size;
+  }
+}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

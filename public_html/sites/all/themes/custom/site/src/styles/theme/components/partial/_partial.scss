@@ -1,0 +1,77 @@
+// |--------------------------------------------------------------------------
+// | Facets
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .partial--facets
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+$partial-bottom-spacing: $grid-gutter-width;
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin partial--facets-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.partial {
+  margin-bottom: $partial-bottom-spacing;
+}
+
+.partial__heading {
+
+  + .partial__body {
+    padding-top: $boxy-body-spacing-top-bottom;
+  }
+}
+
+.partial__heading__title {
+  margin: 0;
+  padding: 0;
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

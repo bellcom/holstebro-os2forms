@@ -1,0 +1,74 @@
+// |--------------------------------------------------------------------------
+// | Sidr
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .sidr
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin sidr-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.sidr {
+
+  .logo {
+    padding: 10px floor( ( $grid-gutter-width / 2 ) );
+
+    img {
+      max-height: 50px;
+    }
+  }
+
+  .logo + .slinky-menu {
+    margin-top: floor( ( $grid-gutter-width / 2 ) );
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

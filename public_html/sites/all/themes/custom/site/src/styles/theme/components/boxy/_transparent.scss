@@ -1,0 +1,80 @@
+// |--------------------------------------------------------------------------
+// | Transparent
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .boxy--transparent
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+$boxy-transparent-heading-background-color: transparent;
+$boxy-transparent-body-background-color: transparent;
+$boxy-transparent-footer-background-color: transparent;
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin boxy-transparent-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.boxy--transparent {
+
+  .boxy__heading {
+    padding-top: 0;
+
+    background-color: $boxy-transparent-heading-background-color;
+  }
+
+  .boxy__body {
+    background-color: $boxy-transparent-body-background-color;
+  }
+
+  .boxy__footer {
+    background-color: $boxy-transparent-footer-background-color;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

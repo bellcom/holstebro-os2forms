@@ -1,0 +1,87 @@
+// |--------------------------------------------------------------------------
+// | Panel
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .panel
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin panels-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.panel {
+
+  &.collapsible {
+
+    .panel-title {
+      position: relative;
+
+      &:after {
+        position: absolute;
+
+        right: 15px;
+
+        font-size: $font-size-large;
+        content: "+";
+        color: $text-color;
+      }
+
+      &[aria-expanded="true"] {
+
+        &:after {
+          content: "-";
+        }
+      }
+    }
+  }
+}
+
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

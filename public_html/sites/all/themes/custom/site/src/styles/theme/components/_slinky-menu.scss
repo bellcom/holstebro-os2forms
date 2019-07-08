@@ -1,0 +1,89 @@
+// |--------------------------------------------------------------------------
+// | Slinky menu
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .slinky-menu
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin slinky-menu-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.slinky-menu {
+  color: #fff;
+
+  li {
+    border-bottom: 1px solid rgba(0, 0, 0, .15);
+  }
+
+  .back {
+    top: 10px;
+  }
+
+  .next {
+
+    &:after {
+      @extend .fa;
+      font-size: 18px;
+      content: $fa-var-angle-right;
+
+      color: #fff;
+    }
+  }
+
+  .title {
+    padding: 0 !important;
+
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

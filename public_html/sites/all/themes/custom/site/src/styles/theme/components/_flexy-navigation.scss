@@ -1,0 +1,90 @@
+// |--------------------------------------------------------------------------
+// | Flexy navigation
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .flexy-navigation
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// Responsive
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin flexy-navigation-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.flexy-navigation__item {
+
+  &.active,
+  &.active-trail {
+
+    &,
+    &:hover {
+
+      > a {
+        color: $flexy-navigation-item-active-link-font-color;
+        background-color: $flexy-navigation-item-active-link-background-color;
+      }
+    }
+  }
+}
+
+.flexy-navigation__item__dropdown-menu {
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  min-width: 230px;
+  max-width: 260px;
+
+  .flexy-navigation__item__dropdown--wide > & {
+    min-width: 320px;
+    max-width: 350px;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

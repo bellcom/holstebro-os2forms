@@ -1,0 +1,98 @@
+// |--------------------------------------------------------------------------
+// | Forms
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .forms
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.form-control {
+  transition: box-shadow .2s;
+
+  &:focus {
+    @include box-shadow(0 1px 3px 0 rgba(0, 0, 0, .06));
+  }
+}
+
+label {
+  font-weight: $font-weight-bold;
+  color: $text-color-dark;
+}
+
+.form-required {
+  font-family: Verdana, Arial, sans-serif;
+  font-weight: bold;
+  font-size: inherit;
+
+  color: $brand-danger;
+}
+
+.webform {
+
+  .form-actions {
+    margin-top: 0 - $form-group-margin-bottom;
+  }
+}
+
+.help-block {
+  color: lighten($text-color, 20%);
+}
+
+.form-actions {
+
+  .btn {
+    //@extend .btn-lg;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}
