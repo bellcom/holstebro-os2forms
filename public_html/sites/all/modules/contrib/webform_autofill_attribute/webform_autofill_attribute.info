@@ -1,0 +1,10 @@
+name = Webform Autofill Attribute
+description = Add the html5 autocomplete attribute to your webform inputs to help users autofill forms faster and more accurately
+core = 7.x
+dependencies[] = webform
+files[] = tests/webform_autofill_attribute.test
+; Information added by Drupal.org packaging script on 2018-05-12
+version = "7.x-1.2"
+core = "7.x"
+project = "webform_autofill_attribute"
+datestamp = "1526125686"
