@@ -1,9 +1,9 @@
 // |--------------------------------------------------------------------------
-// | Webform
+// | Address autocomplete.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .node-webform
+// | - .webform-component-address-autocomp
 // |
 
 // --------------------------------------------------
@@ -14,31 +14,15 @@
 // Mixins
 // --------------------------------------------------
 
-@mixin node-webform-mixin() {}
+@mixin forms-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.node-webform {
+.webform-component-address-autocomp {
 
-  .panel {
-    border: 0;
-    box-shadow: none;
-  }
-
-  .panel-body {
-    padding: 0;
-
-    @include make-row();
-
-    > .form-item {
-      @include make-xs-column(12);
-      @include make-sm-column(6);
-      @include make-md-column(6);
-      @include make-lg-column(6);
-    }
-  }
+  .input-group-addon {}
 }
 
 // --------------------------------------------------
@@ -62,7 +46,15 @@
 @media #{$breakpoint-tablet-only} {}
 
 // Desktop - and up
-@media #{$breakpoint-desktop-and-up} {}
+@media #{$breakpoint-desktop-and-up} {
+
+  .webform-component-address-autocomp {
+
+    .input-group {
+      max-width: 60%;
+    }
+  }
+}
 
 // Desktop - only
 @media #{$breakpoint-desktop-only} {}

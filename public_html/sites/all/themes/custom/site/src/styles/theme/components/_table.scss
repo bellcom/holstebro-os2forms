@@ -27,11 +27,12 @@
     border-bottom: 0;
   }
 
+  > tbody > tr > td {
+    vertical-align: initial;
+  }
+
   th {
     font-weight: $font-weight-bold;
-    color: #fff;
-
-    background-color: $brand-primary;
   }
 
   tr {
@@ -66,10 +67,10 @@
 
   // Reverse the background color
   > tbody > tr:nth-of-type(even) {
-    background-color: $table-bg-accent;
+    background-color: $table-bg;
   }
   > tbody > tr:nth-of-type(odd) {
-    background-color: $table-bg;
+    background-color: $table-bg-accent;
   }
 }
 

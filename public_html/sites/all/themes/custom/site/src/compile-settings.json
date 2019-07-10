@@ -1,6 +1,6 @@
 {
   "options": {
-    "proxy": "http://valghalla.test"
+    "proxy": "http://forms.rebild.test"
   },
   "javascripts": [
     "node_modules/bootstrap-sass/assets/javascripts/bootstrap.js",

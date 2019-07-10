@@ -27,9 +27,25 @@
 .btn-default {}
 
 .btn {
-  border-radius: 50px;
+  min-width: 170px;
   border: 0;
+
+  font-weight: $font-weight;
+  text-transform: uppercase;
+
+  &:focus {
+    text-decoration: underline;
+  }
 }
+
+.btn-primary {
+
+  &, &:hover, &:focus {
+    background: rgb(121,100,140);
+    background: linear-gradient(0deg, rgba(121,100,140, 1) 0%, rgba(147,126,167, 1) 100%);
+  }
+}
+.btn-secondary {}
 
 // --------------------------------------------------
 // Responsive

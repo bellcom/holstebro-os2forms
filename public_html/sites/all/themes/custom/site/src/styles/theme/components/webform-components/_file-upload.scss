@@ -1,0 +1,167 @@
+// |--------------------------------------------------------------------------
+// | Progressbar.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .webform-progressbar
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.webform-component-file,
+.webform-component-multiple-file {
+
+  .form-managed-file {
+    display: block;
+
+    max-width: 500px;
+  }
+
+  .input-group {
+    display: block;
+
+    .form-control {
+      display: block;
+
+      float: none;
+    }
+  }
+
+  .input-group-btn {
+    display: inline-block;
+    position: absolute;
+
+    z-index: 200;
+
+    width: auto;
+
+    top: 5px;
+    right: 5px;
+
+    .btn {
+      padding-top: 9px;
+      padding-bottom: 9px;
+
+      border-radius: $btn-border-radius-base;
+
+      min-width: initial;
+
+      font-size: $font-size-small;
+    }
+  }
+}
+
+table.managed-files {
+
+  th {
+    padding: 0;
+
+    color: $text-color;
+
+    background-color: transparent;
+  }
+
+  .tabledrag-toggle-weight-wrapper,
+  .file-size {
+    display: none;
+  }
+
+  .form-submit {
+    @extend .btn-primary;
+
+    min-width: initial;
+  }
+
+  .draggable a.tabledrag-handle {
+    margin: 0;
+  }
+
+  .handle {
+    background: none;
+
+    &:before {
+      display: inline-block;
+
+      content: $fa-var-arrows;
+
+      font-family: FontAwesome;
+      font-size: $font-size-base;
+
+      color: $text-color;
+      background: none;
+    }
+
+    // Resets.
+    margin: 0;
+    padding: 0;
+    height: initial;
+    width: initial;
+  }
+
+  .file {
+
+    &:before {
+      display: inline-block;
+      font-family: FontAwesome;
+      content: $fa-var-file-o;
+      background: none;
+    }
+  }
+  .file-icon {
+    display: none;
+  }
+}
+
+.tabledrag-toggle-weight-wrapper {
+  display: none;
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

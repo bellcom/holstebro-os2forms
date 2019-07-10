@@ -1,9 +1,9 @@
 // |--------------------------------------------------------------------------
-// | Slinky menu
+// | Form.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .slinky-menu
+// | - .node-webform
 // |
 
 // --------------------------------------------------
@@ -14,40 +14,37 @@
 // Mixins
 // --------------------------------------------------
 
-@mixin slinky-menu-mixin() {}
+@mixin forms-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.slinky-menu {
-  color: #fff;
+.node-webform {
 
-  li {
-    border-bottom: 1px solid rgba(0, 0, 0, .15);
-  }
+  .form-actions {
 
-  .back {
-    top: 10px;
-  }
+    .webform-previous {}
 
-  .next {
-
-    &:after {
-      @extend .fa;
-      font-size: 18px;
-      content: $fa-var-angle-right;
-
-      color: #fff;
+    .webform-next {
+      @extend .btn-primary;
     }
   }
 
-  .title {
-    padding: 0 !important;
-
-    font-weight: bold;
-    text-decoration: underline;
+  .panel {
+    border: 0;
+    box-shadow: none;
   }
+
+  .panel-body {
+    padding: 0;
+  }
+}
+
+// Inline.
+.webform-container-inline div,
+.webform-container-inline div.form-item {
+  display: inline-block;
 }
 
 // --------------------------------------------------

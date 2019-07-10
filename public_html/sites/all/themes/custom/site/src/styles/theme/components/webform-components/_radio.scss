@@ -1,0 +1,216 @@
+// |--------------------------------------------------------------------------
+// | Radio.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .radio
+// |
+
+// Inspired by: https://bootsnipp.com/snippets/ZkMKE
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+div.radio {
+  padding-left: 20px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  .control-label {
+    font-size: $font-size-base;
+  }
+
+  label {
+    display: inline-block;
+    position: relative;
+    padding-left: 5px;
+
+    &:before {
+      content: "";
+      display: inline-block;
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      left: 0;
+      margin-left: -20px;
+      border: 1px solid $input-border;
+      border-radius: 50%;
+      background-color: $input-bg;
+      transition: border 0.15s ease-in-out;
+    }
+
+    &:after {
+      display: inline-block;
+      position: absolute;
+
+      margin-left: -20px;
+
+      content: " ";
+
+      width: 9px;
+      height: 9px;
+
+      left: 4px;
+      top: 4px;
+
+      border-radius: 50%;
+      background-color: $brand-tertiary;
+
+      transform: scale(0, 0);
+      transition: transform 0.1s cubic-bezier(0.8, -0.33, 0.2, 1.33);
+    }
+  }
+
+  input[type="radio"] {
+    opacity: 0;
+
+    &:focus {
+
+      + label {
+
+        &:before {
+          border-color: $input-border-focus;
+          @include box-shadow(0 0 5px rgba(0, 0, 0, .7));
+        }
+      }
+    }
+
+    &:checked {
+
+      + label {
+
+        &:before {
+          border-color: $input-border-focus;
+        }
+
+        &:after {
+          transform: scale(1, 1);
+        }
+      }
+    }
+
+    &:disabled {
+
+      + label {
+        opacity: 0.65;
+
+        &:before {
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+.radio.radio-inline {
+  margin-top: 0;
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+.radio-primary input[type="radio"] + label::after {
+  background-color: #428bca;
+}
+
+.radio-primary input[type="radio"]:checked + label::before {
+  border-color: #428bca;
+}
+
+.radio-primary input[type="radio"]:checked + label::after {
+  background-color: #428bca;
+}
+
+.radio-danger input[type="radio"] + label::after {
+  background-color: #d9534f;
+}
+
+.radio-danger input[type="radio"]:checked + label::before {
+  border-color: #d9534f;
+}
+
+.radio-danger input[type="radio"]:checked + label::after {
+  background-color: #d9534f;
+}
+
+.radio-info input[type="radio"] + label::after {
+  background-color: #5bc0de;
+}
+
+.radio-info input[type="radio"]:checked + label::before {
+  border-color: #5bc0de;
+}
+
+.radio-info input[type="radio"]:checked + label::after {
+  background-color: #5bc0de;
+}
+
+.radio-warning input[type="radio"] + label::after {
+  background-color: #f0ad4e;
+}
+
+.radio-warning input[type="radio"]:checked + label::before {
+  border-color: #f0ad4e;
+}
+
+.radio-warning input[type="radio"]:checked + label::after {
+  background-color: #f0ad4e;
+}
+
+.radio-success input[type="radio"] + label::after {
+  background-color: #5cb85c;
+}
+
+.radio-success input[type="radio"]:checked + label::before {
+  border-color: #5cb85c;
+}
+
+.radio-success input[type="radio"]:checked + label::after {
+  background-color: #5cb85c;
+}
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

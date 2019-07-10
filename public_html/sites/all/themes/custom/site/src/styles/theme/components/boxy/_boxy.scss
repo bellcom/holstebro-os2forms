@@ -26,6 +26,10 @@ $lg-boxy-spacing-left-right: $boxy-spacing-left-right;
 // Styling
 // --------------------------------------------------
 
+.boxy {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .05);
+}
+
 .boxy__heading {
   padding-left: $xs-boxy-spacing-left-right;
   padding-right: $xs-boxy-spacing-left-right;
@@ -47,6 +51,17 @@ $lg-boxy-spacing-left-right: $boxy-spacing-left-right;
 .boxy__footer {
   padding-left: $xs-boxy-spacing-left-right;
   padding-right: $xs-boxy-spacing-left-right;
+
+  background-color: #f6f6f6;
+
+  a {
+
+    &, &:hover {
+      color: $text-color;
+
+      text-decoration: underline;
+    }
+  }
 }
 
 .boxy {
@@ -110,17 +125,10 @@ $lg-boxy-spacing-left-right: $boxy-spacing-left-right;
   }
 }
 
-.boxy--toggleable {
+.boxy--main-content {
 
-  .boxy__body {
+  .webform-progressbar {
     display: none;
-  }
-
-  &.open {
-
-    .boxy__body {
-      display: block;
-    }
   }
 }
 
@@ -176,6 +184,23 @@ $lg-boxy-spacing-left-right: $boxy-spacing-left-right;
     padding-left: $md-boxy-spacing-left-right;
     padding-right: $md-boxy-spacing-left-right;
   }
+
+  .boxy--main-content {
+
+    .boxy__heading {
+      padding-left: $md-boxy-spacing-left-right * 3;
+      padding-right: $md-boxy-spacing-left-right * 3;
+    }
+
+    .boxy__body {
+      padding: ($boxy-heading-spacing-top-bottom * 3) ($md-boxy-spacing-left-right * 3);
+    }
+
+    .boxy__footer {
+      padding-left: $md-boxy-spacing-left-right * 3;
+      padding-right: $md-boxy-spacing-left-right * 3;
+    }
+  }
 }
 
 // Large desktop - and up
@@ -194,6 +219,23 @@ $lg-boxy-spacing-left-right: $boxy-spacing-left-right;
   .boxy__footer {
     padding-left: $lg-boxy-spacing-left-right;
     padding-right: $lg-boxy-spacing-left-right;
+  }
+
+  .boxy--main-content {
+
+    .boxy__heading {
+      padding-left: $lg-boxy-spacing-left-right * 3;
+      padding-right: $lg-boxy-spacing-left-right * 3;
+    }
+
+    .boxy__body {
+      padding: ($boxy-heading-spacing-top-bottom * 3) ($lg-boxy-spacing-left-right * 3);
+    }
+
+    .boxy__footer {
+      padding-left: $lg-boxy-spacing-left-right * 3;
+      padding-right: $lg-boxy-spacing-left-right * 3;
+    }
   }
 }
 

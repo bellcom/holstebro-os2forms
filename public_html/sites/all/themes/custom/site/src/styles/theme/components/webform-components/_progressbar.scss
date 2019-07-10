@@ -1,9 +1,9 @@
 // |--------------------------------------------------------------------------
-// | Forms
+// | Progressbar.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .forms
+// | - .webform-progressbar
 // |
 
 // --------------------------------------------------
@@ -20,59 +20,64 @@
 // Styling
 // --------------------------------------------------
 
-.form-group {
-  margin-bottom: floor( ($form-group-margin-bottom * 1.5) );
+.webform-progressbar {
+  display: flex;
+
+  flex-direction: column-reverse;
 }
 
-.form-control {
-  @include transition(border-color ease-in-out .15s, box-shadow ease-in-out .15s);
+.webform-progressbar-outer {
+  border: 0;
+}
+.webform-progressbar-inner {
+  height: 4px;
 
-  &::-webkit-input-placeholder {
-    font-style: italic;
-  }
-  &:-moz-placeholder {
-    font-style: italic;
-  }
-  &::-moz-placeholder {
-    font-style: italic;
-  }
-  &:-ms-input-placeholder {
-    font-style: italic;
-  }
+  border: 0;
 
-  &:focus {
-    @include box-shadow(0 0 5px rgba(0, 0, 0, .7));
-  }
+  background-color: $brand-primary;
 }
 
-.control-label {
+.webform-progressbar-number {
+  margin-bottom: $grid-gutter-width;
+
   font-size: $font-size-large;
-  font-weight: $font-weight-bold;
+  text-transform: uppercase;
 }
 
-.form-required {
-  font-family: Verdana, Arial, sans-serif;
-  font-weight: bold;
-  font-size: inherit;
+.webform-progressbar-page {
+  margin-top: -18px;
+  margin-left: -15px;
 
-  color: $brand-danger;
-}
+  width: 30px;
+  height: 30px;
 
-.help-block {
-  font-size: $font-size-small;
+  border-width: 3px;
+  border-radius: 100%;
+  border-color: white;
 
-  color: $text-color;
-}
+  &.completed {
+    border-color: $brand-primary;
+    background-color: white;
 
-// Fixes an issue where the selector gets height: 1em applied.
-fieldset.collapsed {
-  height: auto !important;
-}
+    .webform-progressbar-page-label {
+      text-decoration: line-through;
+    }
+  }
+  &.current {
+    border-color: $brand-primary;
+    background-color: $brand-primary;
+  }
+  &.clickable {}
 
-input[type="file"]:focus {
-  outline: none;
+  .webform-progressbar-page-label {
+    top: 30px;
 
-  @include box-shadow(none);
+    font-weight: $font-weight-bold;
+  }
+
+  .webform-progressbar-page-number {
+    display: none;
+  }
 }
 
 // --------------------------------------------------
@@ -99,10 +104,22 @@ input[type="file"]:focus {
 @media #{$breakpoint-desktop-and-up} {}
 
 // Desktop - only
-@media #{$breakpoint-desktop-only} {}
+@media #{$breakpoint-desktop-only} {
+
+  .webform-progressbar {
+    padding-left: $md-boxy-spacing-left-right * 3;
+    padding-right: $md-boxy-spacing-left-right * 3;
+  }
+}
 
 // Large desktop - and up
-@media #{$breakpoint-large-desktop-and-up} {}
+@media #{$breakpoint-large-desktop-and-up} {
+
+  .webform-progressbar {
+    padding-left: $lg-boxy-spacing-left-right * 3;
+    padding-right: $lg-boxy-spacing-left-right * 3;
+  }
+}
 
 // Print
 @media print {}

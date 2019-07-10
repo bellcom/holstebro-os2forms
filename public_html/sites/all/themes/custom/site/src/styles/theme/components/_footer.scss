@@ -27,14 +27,27 @@ $lg-layout-footer-top-bottom-padding: 40px;
 // --------------------------------------------------
 
 .layout__footer {
-  color: $text-color-dark;
+  background-color: $body-bg-secondary;
+
+  .flexy-list {
+    margin-top: 10px;
+
+    > * {
+      padding-left: 15px;
+      padding-right: 15px;
+
+      border-right: 1px solid $text-color;
+
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
 }
 
 .layout__footer__inner {
   padding-top: $xs-layout-footer-top-bottom-padding;
   padding-bottom: $xs-layout-footer-top-bottom-padding;
-
-  border-top: 1px solid $border-color;
 }
 
 // --------------------------------------------------

@@ -1,41 +1,39 @@
 // |--------------------------------------------------------------------------
-// | Facets
+// | Select.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .partial--facets
+// | - .webform-component-select
+// | - .webform-component-select-or-other
 // |
 
 // --------------------------------------------------
 // Variables
 // --------------------------------------------------
 
-$partial-bottom-spacing: $grid-gutter-width;
-
 // --------------------------------------------------
 // Mixins
 // --------------------------------------------------
 
-@mixin partial--facets-mixin() {}
+@mixin forms-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.partial {
-  margin-bottom: $partial-bottom-spacing;
-}
+.webform-component-select,
+.webform-component-select-or-other {
 
-.partial__heading {
+  .form-item {
 
-  + .partial__body {
-    padding-top: $boxy-body-spacing-top-bottom;
+    &.form-group {
+      margin-bottom: 0;
+    }
+
+    + .form-item {
+      margin-top: 10px;
+    }
   }
-}
-
-.partial__heading__title {
-  margin: 0;
-  padding: 0;
 }
 
 // --------------------------------------------------

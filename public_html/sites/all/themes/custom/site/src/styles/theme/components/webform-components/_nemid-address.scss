@@ -1,9 +1,9 @@
 // |--------------------------------------------------------------------------
-// | Sidr
+// | NemID address.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .sidr
+// | - .webform-component-nemid-address
 // |
 
 // --------------------------------------------------
@@ -14,26 +14,13 @@
 // Mixins
 // --------------------------------------------------
 
-@mixin sidr-mixin() {}
+@mixin forms-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.sidr {
-
-  .logo {
-    padding: 10px floor( ( $grid-gutter-width / 2 ) );
-
-    img {
-      max-height: 50px;
-    }
-  }
-
-  .logo + .slinky-menu {
-    margin-top: floor( ( $grid-gutter-width / 2 ) );
-  }
-}
+.webform-component-nemid-address {}
 
 // --------------------------------------------------
 // Variants
@@ -56,7 +43,15 @@
 @media #{$breakpoint-tablet-only} {}
 
 // Desktop - and up
-@media #{$breakpoint-desktop-and-up} {}
+@media #{$breakpoint-desktop-and-up} {
+
+  .webform-component-nemid-address {
+
+    .form-control {
+      max-width: 60%;
+    }
+  }
+}
 
 // Desktop - only
 @media #{$breakpoint-desktop-only} {}

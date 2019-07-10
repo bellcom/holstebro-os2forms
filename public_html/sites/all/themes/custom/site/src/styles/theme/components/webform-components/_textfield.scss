@@ -1,34 +1,27 @@
 // |--------------------------------------------------------------------------
-// | Flexy header
+// | Textfield.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .flexy-header
+// | - .webform-component-textfield
+// | - .webform-component-email
 // |
 
 // --------------------------------------------------
 // Variables
 // --------------------------------------------------
 
-// Responsive
-$xs-logo-font-size: 20px;
-$sm-logo-font-size: 22px;
-$md-logo-font-size: 28px;
-$lg-logo-font-size: 28px;
-
 // --------------------------------------------------
 // Mixins
 // --------------------------------------------------
 
-@mixin flexy-header-mixin() {}
+@mixin forms-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.flexy-header--static {
-  z-index: 100;
-}
+.webform-component-textfield {}
 
 // --------------------------------------------------
 // Variants
@@ -48,31 +41,25 @@ $lg-logo-font-size: 28px;
 @media #{$breakpoint-tablet-and-up} {}
 
 // Tablet - only
-@media #{$breakpoint-tablet-only} {
-
-  .flexy-header__logo {
-    font-size: $sm-logo-font-size;
-  }
-}
+@media #{$breakpoint-tablet-only} {}
 
 // Desktop - and up
-@media #{$breakpoint-desktop-and-up} {}
+@media #{$breakpoint-desktop-and-up} {
+
+  .webform-component-email,
+  .webform-component-textfield {
+
+    .form-control {
+      max-width: 60%;
+    }
+  }
+}
 
 // Desktop - only
-@media #{$breakpoint-desktop-only} {
-
-  .flexy-header__logo {
-    font-size: $md-logo-font-size;
-  }
-}
+@media #{$breakpoint-desktop-only} {}
 
 // Large desktop - and up
-@media #{$breakpoint-large-desktop-and-up} {
-
-  .flexy-header__logo {
-    font-size: $lg-logo-font-size;
-  }
-}
+@media #{$breakpoint-large-desktop-and-up} {}
 
 // Print
 @media print {}

@@ -48,4 +48,10 @@ jQuery(function ($) {
       window.location.hash = target;
     });
   });
+
+  // Clone webform progressbar away from the body.
+  var $placeholder = $('.webform-progressbar-placeholder');
+  var $clones = $('.boxy--main-content .webform-progressbar').clone(true);
+
+  $placeholder.prepend($clones);
 });

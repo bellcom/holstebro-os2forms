@@ -8,9 +8,9 @@ $boxy-heading-background-color: $body-bg-secondary;
 $boxy-heading-title-color: $headings-color;
 
 // Body
-$boxy-body-spacing-top-bottom: floor( ( $grid-gutter-width / 2 ) );
+$boxy-body-spacing-top-bottom: 20px;
 $boxy-body-border: 0;
-$boxy-body-background-color: transparent;
+$boxy-body-background-color: $body-bg-secondary;
 
 // Footer
 $boxy-footer-spacing-top-bottom: 10px !default;

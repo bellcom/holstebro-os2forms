@@ -7,11 +7,11 @@ $flexy-navigation-item-link-font-weight: $font-weight !default;
 $flexy-navigation-item-link-font-color: $headings-color;
 $flexy-navigation-item-link-background-color: transparent !default;
 
-$flexy-navigation-item-link-hover-font-color: $brand-primary !default;
+$flexy-navigation-item-link-hover-font-color: $brand-tertiary;
 $flexy-navigation-item-link-hover-background-color: transparent !default;
 
 $flexy-navigation-item-active-link-font-color: #fff;
-$flexy-navigation-item-active-link-background-color: $brand-primary;
+$flexy-navigation-item-active-link-background-color: $brand-tertiary;
 
 $flexy-navigation-item-dropdown-icon: $fa-var-angle-down !default;
 
@@ -38,7 +38,7 @@ $flexy-navigation-item-dropdown-menu-item-link-background-color: transparent !de
 $flexy-navigation-item-dropdown-menu-item-hover-link-font-color: $headings-color;
 $flexy-navigation-item-dropdown-menu-item-hover-link-background-color: transparent !default;
 
-$flexy-navigation-item-dropdown-menu-item-active-link-font-color: $brand-primary !default;
+$flexy-navigation-item-dropdown-menu-item-active-link-font-color: $brand-tertiary;
 $flexy-navigation-item-dropdown-menu-item-active-link-background-color: transparent !default;
 
 $flexy-navigation-item-dropdown-menu-item-dropdown-icon: $fa-var-angle-right !default;

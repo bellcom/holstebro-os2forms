@@ -1,9 +1,11 @@
 // |--------------------------------------------------------------------------
-// | Views
+// | Date.
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .views
+// | - .webform-component-date
+// | - .webform-component-time
+// | - .webform-datepicker
 // |
 
 // --------------------------------------------------
@@ -14,16 +16,71 @@
 // Mixins
 // --------------------------------------------------
 
-@mixin views-mixin() {}
+@mixin forms-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.view-filters {
+.webform-component-date {}
 
-  + .view-content {
-    margin-top: $grid-gutter-width;
+.webform-datepicker {
+
+  .form-item {
+
+    &.form-group {
+      margin-bottom: 0;
+    }
+
+    + .form-item {
+      margin-left: 10px;
+    }
+  }
+
+  .webform-datepicker {
+
+    .day {
+      min-width: 100px;
+    }
+
+    .month {
+      min-width: 150px;
+    }
+
+    .year {
+      min-width: 100px;
+    }
+  }
+
+  input.webform-calendar {
+    margin-top: -20px;
+    margin-left: -24px;
+  }
+}
+
+.webform-component-time {
+
+  > div {
+    font-size: 0;
+  }
+
+  .form-item {
+
+    &.form-group {
+      margin-bottom: 0;
+    }
+
+    + .form-item {
+      margin-left: 10px;
+    }
+
+    .hour {
+      min-width: 140px;
+    }
+
+    .minute {
+      min-width: 140px;
+    }
   }
 }
 
@@ -48,7 +105,23 @@
 @media #{$breakpoint-tablet-only} {}
 
 // Desktop - and up
-@media #{$breakpoint-desktop-and-up} {}
+@media #{$breakpoint-desktop-and-up} {
+
+  .webform-datepicker {
+
+    .day {
+      min-width: 140px;
+    }
+
+    .month {
+      min-width: 200px;
+    }
+
+    .year {
+      min-width: 140px;
+    }
+  }
+}
 
 // Desktop - only
 @media #{$breakpoint-desktop-only} {}

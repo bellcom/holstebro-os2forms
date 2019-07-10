@@ -33,11 +33,15 @@
 }
 
 .sectioned--page-header {
-  @include sectioned-mixin($body-bg-secondary);
+  //@include sectioned-mixin($body-bg-secondary);
 
   h1 {
     margin: 0;
     padding: 0;
+  }
+
+  .webform-progressbar-placeholder {
+    margin-top: 50px;
   }
 }
 

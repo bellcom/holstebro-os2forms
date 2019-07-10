@@ -1,49 +1,121 @@
 // |--------------------------------------------------------------------------
-// | Breadcrumb
+// | Calendar
 // |--------------------------------------------------------------------------
 // |
 // | This file contains styles for the following:
-// | - .breadcrumb
+// | - .calendar
 // |
 
 // --------------------------------------------------
 // Variables
 // --------------------------------------------------
 
-// Responsive
-
 // --------------------------------------------------
 // Mixins
 // --------------------------------------------------
 
-@mixin breadcrumb-mixin() {}
+@mixin calendar-mixin() {}
 
 // --------------------------------------------------
 // Styling
 // --------------------------------------------------
 
-.breadcrumb {
-  display: inline-block;
+.ui-datepicker {
+  z-index: 500 !important;
 
-  margin: 0;
+  //padding: 6px 15px;
+
+  border: 0;
   border-radius: 0;
+  background: #fff;
+
+  @include box-shadow(0 2px 5px 0 rgba(0, 0, 0, 0.25));
 
   &,
-  a {
+  &.ui-widget {
+    font-size: $font-size-base;
+  }
 
-    &, &:hover {
-      color: $text-color;
-      text-decoration: none;
+  .ui-widget-header {
+    border: 0;
+
+    color: $text-color;
+    background: none;
+  }
+  .ui-datepicker-title {
+    color: $text-color;
+  }
+
+  .ui-state-default,
+  .ui-widget-content .ui-state-default {
+    padding: 10px 6px;
+    border: 0;
+    text-align: center;
+
+    background: none;
+    color: $text-color;
+
+    &.ui-state-highlight {
+      color: #979797;
+      background-color: $body-bg;
+    }
+
+    &.ui-state-active {
+      color: $component-active-color;
+      background-color: $component-active-bg;
     }
   }
 
-  > li {
+  .ui-datepicker-prev,
+  .ui-datepicker-next {
+    display: flex;
 
-    + li:before {
-      padding-right: 15px;
-      padding-left: 10px;
+    align-items: center;
+    justify-content: center;
 
+    cursor: pointer;
+    cursor: hand;
+
+    &,
+    &:hover {
+      padding: 0;
+
+      border: 0;
+      background: 0;
+    }
+
+    &:before {
+      position: absolute;
+      display: block;
       font-family: FontAwesome;
+
+      color: $text-color;
+    }
+
+    .ui-icon {
+      display: none;
+    }
+  }
+
+  .ui-datepicker-prev {
+
+    &, &:hover {
+      top: 2px;
+      left: 2px;
+    }
+
+    &:before {
+      content: $fa-var-angle-left;
+    }
+  }
+  .ui-datepicker-next {
+
+    &, &:hover {
+      top: 2px;
+      right: 2px;
+    }
+
+    &:before {
       content: $fa-var-angle-right;
     }
   }

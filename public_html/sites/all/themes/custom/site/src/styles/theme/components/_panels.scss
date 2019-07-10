@@ -20,37 +20,74 @@
 // Styling
 // --------------------------------------------------
 
-.panel {
+.panel {}
+.panel-title {
+  display: block;
 
-  &.collapsible {
+  font-weight: $font-weight-bold;
 
-    .panel-title {
-      position: relative;
+  &, &:hover, &:focus {
+    text-decoration: none;
+  }
 
-      &:after {
-        position: absolute;
+  &:before {
+    display: inline-block;
 
-        right: 15px;
+    margin-right: 10px;
 
-        font-size: $font-size-large;
-        content: "+";
-        color: $text-color;
-      }
+    font-family: FontAwesome;
+    font-size: $font-size-large;
+    content: $fa-var-plus-circle;
+  }
 
-      &[aria-expanded="true"] {
+  &[aria-expanded="true"] {
 
-        &:after {
-          content: "-";
-        }
-      }
+    &:before {
+      content: $fa-var-minus-circle;
     }
   }
 }
 
-
 // --------------------------------------------------
 // Variants
 // --------------------------------------------------
+
+.panel,
+.panel-default {
+
+  .panel-heading {
+    padding: 0;
+    border: 0;
+
+    background-color: transparent;
+  }
+
+  .panel-title {
+    padding: $panel-heading-padding;
+
+    font-size: $font-size-base;
+    border-radius: $border-radius-base;
+
+    background-color: $panel-default-heading-bg;
+
+    &, &:hover, &:focus {
+      color: $text-color;
+    }
+
+    &:before {
+      color: $text-color;
+    }
+
+    &[aria-expanded="true"] {
+      color: white;
+      background-color: $brand-tertiary;
+
+      &:before {
+        color: white;
+      }
+    }
+  }
+}
 
 // --------------------------------------------------
 // Responsive

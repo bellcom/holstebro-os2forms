@@ -36,15 +36,6 @@ img {
   }
 }
 
-.form-control {
-  // Remove inline shadow on iOS (https://stackoverflow.com/questions/23211656/remove-ios-input-shadow)
-  //appearance: none;
-
-  & {
-    @include box-shadow(none);
-  }
-}
-
 .label {
   padding: 4px 16px;
 
@@ -62,6 +53,11 @@ img {
 
 .container-fluid {
   max-width: 1350px;
+}
+
+th.checkbox,
+td.checkbox {
+  display: table-cell;
 }
 
 // --------------------------------------------------
