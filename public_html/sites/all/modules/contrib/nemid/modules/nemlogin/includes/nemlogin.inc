@@ -2,63 +2,131 @@
 
 /**
  * @file
- * Include SimpleSAML_Auth_Simple help functions.
+ * Include Nemlogin help functions.
  */
 
 /**
- * Returns SimpleSAML_Auth_Simple object.
- *
- * @throws Exception
- *   Wrong directory of SimpleSaml Exception.
- *
- * @return object
- *   SimpleSAML_Auth_Simple object.
+ * Nemlogin auth interface.
  */
-function get_simple_saml_auth() {
-  $simplesaml_installdir = variable_get('nemlogin_simplesaml_installdir');
+interface NemloginAuthInterface {
 
-  if (!file_exists($simplesaml_installdir . '/lib/_autoload.php')) {
-    throw new Exception('Simplesaml install directory is not properly configured');
-  }
-  else {
-    require_once $simplesaml_installdir . '/lib/_autoload.php';
+  /**
+   * Check plugin initialization status.
+   *
+   * @return bool
+   *   Boolean value about plugin initialization status.
+   */
+  public function isInitialized();
 
-    $as = new SimpleSAML_Auth_Simple(variable_get('nemlogin_simplesaml_default_auth', 'default-sp'));
-    return $as;
-  }
+  /**
+   * Check authorization status.
+   *
+   * @return bool
+   *   Boolean value about authorization status.
+   */
+  public function isAuthenticated();
+
+  /**
+   * Main login method.
+   */
+  public function login();
+
+  /**
+   * Main logout method.
+   */
+  public function logout();
+
+  /**
+   * Fetch authorization value by key.
+   *
+   * @param string $key
+   *   Key for fetching value.
+   *
+   * @return string
+   *   Authorization value.
+   */
+  public function fetchValue($key);
+
+  /**
+   * Defines plugin settings form elements.
+   *
+   * @return array
+   *   Settings form array.
+   */
+  public function settingsForm();
+
+  /**
+   * Defines plugin settings validate handler.
+   *
+   * @param array $form
+   *   Form array.
+   * @param array $form_state
+   *   Form state array.
+   */
+  public function settingsFormValidate(array &$form, array &$form_state);
+
+  /**
+   * Defines plugin settings submit handler.
+   *
+   * @param array $form
+   *   Form array.
+   * @param array $form_state
+   *   Form state array.
+   */
+  public function settingsFormSubmit(array &$form, array &$form_state);
+
 }
 
 /**
- * Attempts to fetch field from the SimpleAuth attributes.
- *
- * Function that attempts to fetch field from the SimpleAuth attributes with
- * specific name, suffix with NumberIdentifier.
- * E.g. if field name is "CPR", method will attempt
- * to fetch dk:gov:saml:attribute:CprNumberIdentifier.
- *
- * If field value is fetch it is returned, otherwise NULL is returned.
- *
- * @param mixed $as
- *   SimpleAuth valid object.
- * @param string $field_name
- *   Name of the field.
- *
- * @return string
- *   Field value.
+ * NemidAuth base class.
  */
-function attempt_fetch_number_identifier($as, $field_name = 'cpr') {
-  // Make first char uppercase and suffixing with NumberIdentifier.
-  $field_name = ucfirst(strtolower($field_name));
-  $field_name .= 'NumberIdentifier';
+abstract class NemloginAuth implements NemloginAuthInterface {
 
-  $attrs = $as->getAttributes();
-  $field_value = NULL;
+  /**
+   * Authorization values array.
+   *
+   * @var array
+   */
+  protected $values;
 
-  if (is_array($attrs) && isset($attrs["dk:gov:saml:attribute:$field_name"])) {
-    if (is_array($attrs["dk:gov:saml:attribute:$field_name"]) && isset($attrs["dk:gov:saml:attribute:$field_name"][0])) {
-      $field_value = $attrs["dk:gov:saml:attribute:$field_name"][0];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function fetchValue($key) {
+    return isset($this->values[$key]) ? $this->values[$key] : NULL;
   }
 
-  return $field_value;
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm() {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsFormValidate(array &$form, array &$form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsFormSubmit(array &$form, array &$form_state) {
+  }
+
+  /**
+   * Build return link based on data from current request.
+   *
+   * @return string
+   *   Return link URL.
+   */
+  protected function getReturnUrl() {
+    global $base_url, $base_path;
+    $destination = drupal_get_destination();
+    if ($destination['destination'] == ltrim(request_uri(), '/')) {
+      $destination['destination'] = '';
+    }
+    return $base_url . $base_path . $destination['destination'];
+  }
+
 }
