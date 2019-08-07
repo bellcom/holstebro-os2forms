@@ -90,6 +90,8 @@ class NemloginAuthIDP extends NemloginAuth {
     $response = NULL;
     $cpr = NULL;
     $pid = NULL;
+    $cvr = NULL;
+    $rid = NULL;
 
     try {
       $response = $this->soapClient->LogIn(array('token' => $token, 'mnemo' => $mnemo));
@@ -99,34 +101,57 @@ class NemloginAuthIDP extends NemloginAuth {
     }
 
     if ($response && isset($response->LogInResult)) {
-      // We need to store CPR and PID value between redirects
+      // We need to store values between redirects
       // to be able use it in a a signup form.
       // This value will be deleted after first usage.
       // @see $this->fetchValue() method.
 
-      $cprraw = $response->LogInResult->cpr;
-      if ($cprraw) {
-        $cpr = utf8_decode($cprraw);
-        $this->values['cpr'] = $cpr;
+      if (isset($response->LogInResult->cpr)) {
+        $cprraw = $response->LogInResult->cpr;
+        if ($cprraw) {
+          $cpr = utf8_decode($cprraw);
+          $this->values['cpr'] = $cpr;
+        }
       }
 
-      $pidraw = $response->LogInResult->pid;
-      if ($pidraw) {
-        $pid = utf8_decode($pidraw);
-        $this->values['pid'] = $pid;
+      if (isset($response->LogInResult->pid)) {
+        $pidraw = $response->LogInResult->pid;
+        if ($pidraw) {
+          $pid = utf8_decode($pidraw);
+          $this->values['pid'] = $pid;
+        }
+      }
+
+      if (isset($response->LogInResult->cvr)) {
+        $cvrraw = $response->LogInResult->cvr;
+        if ($cvrraw) {
+          $cvr = utf8_decode($cvrraw);
+          $this->values['cvr'] = $cvr;
+        }
+      }
+
+      if (isset($response->LogInResult->rid)) {
+        $ridraw = $response->LogInResult->rid;
+        if ($ridraw) {
+          $rid = utf8_decode($ridraw);
+          $this->values['rid'] = $rid;
+        }
       }
     }
 
-    if (!$cpr) {
-      watchdog('nemlogin Idp', 'Could not fetch CPR. Response is empty', array(), WATCHDOG_WARNING);
+    if (!$cpr && !$cvr) {
+      watchdog('nemlogin Idp', 'Could not fetch CPR / CVR. Response is empty', array(), WATCHDOG_WARNING);
     }
-    if (!$pid) {
-      watchdog('nemlogin Idp', 'Could not fetch PID. Response is empty', array(), WATCHDOG_WARNING);
+    if (!$pid && $rid) {
+      watchdog('nemlogin Idp', 'Could not fetch PID / RID. Response is empty', array(), WATCHDOG_WARNING);
     }
 
+    $return_to_url = $this->getReturnUrl();
     if ($this->fetchOnce) {
-      $return_to_url = $this->getReturnUrl();
       $this->destroySession($return_to_url);
+    }
+    else {
+      drupal_goto($return_to_url);
     }
   }
 
