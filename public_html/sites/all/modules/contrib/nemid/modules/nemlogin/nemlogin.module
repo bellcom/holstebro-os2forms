@@ -11,164 +11,332 @@ module_load_include('inc', 'nemlogin', 'includes/nemlogin');
  * Implements hook_menu().
  */
 function nemlogin_menu() {
-  $items['nemlogin/require/%'] = array(
-    'title' => 'Nemlogin require authentication',
-    'description' => 'Nemlogin require authentication',
-    'page callback' => 'nemlogin_require_auth',
-    'page arguments' => array(2),
-    'access arguments' => array('access content'),
-    'type' => MENU_NORMAL_ITEM,
-  );
+  // Adding parent menu item parent module is not active.
+  if (!module_exists('nemid')) {
+    $items['admin/config/nemid'] = array(
+      'title' => 'NemID Settings',
+      'position' => 'right',
+      'weight' => -15,
+      'access arguments' => array('administer site configuration'),
+      'page callback' => 'system_admin_menu_block_page',
+      'file' => 'system.admin.inc',
+      'file path' => drupal_get_path('module', 'system'),
+      'type' => MENU_NORMAL_ITEM,
+    );
+  }
 
   $items['admin/config/nemid/nemlogin'] = array(
     'title' => 'Configure Nemlogin',
     'description' => 'Configure Nemlogin settings',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('nemlogin_menu_settings_form'),
-    'access arguments' => array('administer site configuration'),
+    'page arguments' => array('nemlogin_settings_form'),
+    'access arguments' => array('administer nemlogin configuration'),
     'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/config/nemid/nemlogin/%'] = array(
+    'title' => 'Nemlogin plugin configuration',
+    'title callback' => 'nemlogin_plugin_settings_title',
+    'title arguments' => array(4),
+    'description' => 'Configure Nemlogin settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('nemlogin_plugin_settings_form', 4),
+    'access arguments' => array('administer nemlogin configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['nemlogin/login'] = array(
+    'title' => 'Nemlogin login callback',
+    'description' => 'Nemlogin login callback',
+    'page callback' => 'nemlogin_plugin_call_method',
+    'page arguments' => array('login'),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['nemlogin/logout'] = array(
+    'title' => 'Nemlogin logout',
+    'description' => 'Nemlogin logout callback',
+    'page callback' => 'nemlogin_plugin_call_method',
+    'page arguments' => array('logout'),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
 }
 
 /**
+ * Implements hook_ctools_plugin_type().
+ */
+function nemlogin_ctools_plugin_type() {
+  return array(
+    'nemlogin_auth' => array(
+      'classes' => array('handler'),
+      'child plugins' => TRUE,
+      'use hooks' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function nemlogin_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'nemlogin' && $plugin_type == 'nemlogin_auth') {
+    return "plugins/$plugin_type";
+  }
+}
+
+/**
+ * Implements hook_permissions().
+ */
+function nemlogin_permissions() {
+  return array(
+    'administer nemlogin configuration' => array(
+      'title' => t('Administer Nemlogin configuration'),
+    ),
+  );
+}
+
+/**
+ * Configure menu item title callback.
+ *
+ * @param string $nemlogin_plugin_id
+ *   Plugin id.
+ *
+ * @return array|mixed|string|null
+ *   Formatted title.
+ */
+function nemlogin_plugin_settings_title($nemlogin_plugin_id) {
+  return t('Nemlogin !title plugin configuration', array('!title' => $nemlogin_plugin_id));
+}
+
+/**
+ * Call plugin method.
+ *
+ * @param string $method
+ *   Calling method name.
+ */
+function nemlogin_plugin_call_method($method) {
+  $args = func_get_args();
+
+  /** @var NemloginAuthInterface $nemlogin_plugin_class */
+  $class = nemlogin_get_plugin_object();
+  if (!method_exists($class, $method)) {
+    return;
+  }
+
+  // Call plugin method.
+  call_user_func(array($class, $method), $args);
+}
+
+/**
  * Nemlogin settings form definition.
  */
-function nemlogin_menu_settings_form() {
+function nemlogin_settings_form() {
   $form = array();
 
-  $form['nemlogin_simplesaml_installdir'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Full path to simplesaml installation'),
-    '#default_value' => variable_get('nemlogin_simplesaml_installdir'),
+  $headers = array(
+    'Name',
+    'Status',
+    'Actions',
   );
+  $nemlogin_plugin_id = variable_get('nemlogin_plugin_id');
+  $form['header'] = array(
+    '#prefix' => '<h2>',
+    '#markup' => t('Select Nemlogin plugin'),
+    '#suffix' => '</h2>',
+  );
+  ctools_include('plugins');
+  foreach (ctools_get_plugins('nemlogin', 'nemlogin_auth') as $plugin_id => $plugin) {
+    $class_name = ctools_plugin_get_class($plugin, 'handler');
+    if (class_exists($class_name)) {
+      /** @var NemloginAuthInterface $nemlogin_plugin_class */
+      $class = new $class_name();
+    }
+    $options[$plugin_id] = array(
+      $plugin['title'],
+    );
 
-  $form['nemlogin_simplesaml_default_auth'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Simplesaml default auth method'),
-    '#default_value' => variable_get('nemlogin_simplesaml_default_auth', 'default-sp'),
+    if (empty($class)) {
+      $options[$plugin_id][] = 'Plugin hanldler class is empty';
+      continue;
+    }
+    $options[$plugin_id][] = $class->isInitialized() ? 'Ok' : t('Auth object initialization failed.');
+    $options[$plugin_id][] = empty($class->settingsForm()) ? '' : l(t('Settings'), 'admin/config/nemid/nemlogin/' . $plugin_id, array(
+      'query' => drupal_get_destination(),
+    ));
+  }
+
+  $form['nemlogin_plugin_id'] = array(
+    '#type' => 'tableselect',
+    '#header' => $headers,
+    '#options' => $options,
+    '#multiple' => FALSE,
+    '#default_value' => $nemlogin_plugin_id,
   );
 
   return system_settings_form($form);
 }
 
 /**
- * Nemlogin require authentication page callback.
+ * Nemlogin plugin settings form declaration.
+ */
+function nemlogin_plugin_settings_form($form, &$form_state, $nemlogin_plugin_id) {
+  ctools_include('plugins');
+  $nemlogin_plugins = ctools_get_plugins('nemlogin', 'nemlogin_auth');
+  $nemlogin_plugin = isset($nemlogin_plugins[$nemlogin_plugin_id]) ? $nemlogin_plugins[$nemlogin_plugin_id] : NULL;
+
+  $class_name = ctools_plugin_get_class($nemlogin_plugin, 'handler');
+  if (class_exists($class_name)) {
+    /** @var NemloginAuthInterface $nemlogin_plugin_class */
+    $class = new $class_name();
+    $settings = $class->settingsForm();
+  }
+
+  if (!empty($settings)) {
+    $form[$nemlogin_plugin_id] = array(
+      '#type' => 'fieldset',
+      '#title' => $nemlogin_plugin['title'],
+      'settings' => $settings,
+    );
+    $form['#submit'][] = 'nemlogin_settings_form_submit';
+    $form_state['storage']['nemlogin_plugin_id'] = $nemlogin_plugin_id;
+  }
+  else {
+    $form['markup'] = array('#markup' => t('There is no settings for this plugin'));
+  }
+
+  return system_settings_form($form);
+}
+
+/**
+ * Nemlogin settings form validate handler.
+ */
+function nemlogin_plugin_settings_form_validate(&$form, &$form_state) {
+  if (empty($form_state['storage']['nemlogin_plugin_id'])) {
+    return;
+  }
+
+  $nemlogin_plugin_id = $form_state['storage']['nemlogin_plugin_id'];
+  /** @var NemloginAuthInterface $nemlogin_auth */
+  $nemlogin_plugin_class = nemlogin_get_plugin_object($nemlogin_plugin_id);
+  if (empty($nemlogin_plugin_class)) {
+    return;
+  }
+  $nemlogin_plugin_class->settingsFormValidate($form, $form_state);
+}
+
+/**
+ * Nemlogin settings form submit handler.
+ */
+function nemlogin_settings_form_submit(&$form, &$form_state) {
+  if (empty($form_state['storage']['nemlogin_plugin_id'])) {
+    return;
+  }
+
+  $nemlogin_plugin_id = $form_state['storage']['nemlogin_plugin_id'];
+  /** @var NemloginAuthInterface $nemlogin_auth */
+  $nemlogin_plugin_class = nemlogin_get_plugin_object($nemlogin_plugin_id);
+  if (empty($nemlogin_plugin_class)) {
+    return;
+  }
+  $nemlogin_plugin_class->settingsFormSubmit($form, $form_state);
+}
+
+/**
+ * Get plugin object function.
  *
- * Creates SimpleSAML_Auth_Simple, sets up return to url and requires
- * the authentification (actual redirect to IDP)
+ * @return null|NemloginAuthInterface
+ *   Nemlogin auth object.
+ */
+function nemlogin_get_plugin_object($nemlogin_plugin_id = NULL) {
+  if (empty($nemlogin_plugin_id)) {
+    $nemlogin_plugin_id = variable_get('nemlogin_plugin_id');
+  }
+  ctools_include('plugins');
+  $nemlogin_plugins = ctools_get_plugins('nemlogin', 'nemlogin_auth');
+
+  if (empty($nemlogin_plugins[$nemlogin_plugin_id])) {
+    return NULL;
+  }
+
+  $class_name = ctools_plugin_get_class($nemlogin_plugins[$nemlogin_plugin_id], 'handler');
+  if (!class_exists($class_name)) {
+    return NULL;
+  }
+
+  return new $class_name();
+}
+
+/**
+ * Generates a NemID link.
  *
- * @param int $nid
- *   NID.
+ * @param string $login_text
+ *   Login link text.
+ * @param string $logout_text
+ *   Logout link text.
+ * @param array $options
+ *   Link options @see l().
  *
  * @return string
- *   Page response.
+ *   Generated URL.
  */
-function nemlogin_require_auth($nid) {
-  global $base_url;
-  global $base_path;
-  $return_to_link = $base_url . $base_path . "node/$nid";
+function nemlogin_link($login_text = NULL, $logout_text = NULL, array $options = array()) {
+  $login_text = isset($login_text) ? $login_text : t('Login with Nemlogin');
+  $logout_text = isset($logout_text) ? $logout_text : t('Logout with Nemlogin');
 
-  try {
-    $as = get_simple_saml_auth();
-    $as->requireAuth(
-      array(
-        'ReturnTo' => $return_to_link,
-      )
-    );
-  }
-  catch (Exception $e) {
-    watchdog("Nemlogin", 'Cannot initialize simplesaml request: @message', array('@message' => $e->getMessage()), WATCHDOG_ERROR);
-
-    // If for some reason the redirect didn't happen automatically,
-    // go back to node.
-    drupal_goto("node/$nid");
+  $nemlogin_object = nemlogin_get_plugin_object();
+  if (empty($nemlogin_object)) {
+    drupal_set_message(t("Nemlogin authorization object is empty."), 'warning');
+    return NULL;
   }
 
-  return '';
+  if (!$nemlogin_object->isInitialized()) {
+    drupal_set_message(t("Nemlogin authorization object doesn't work properly."), 'warning');
+    return NULL;
+  }
+
+  return $nemlogin_object->isAuthenticated()
+    ? l($logout_text, nemlogin_get_logout_url($options))
+    : l($login_text, nemlogin_get_login_url($options));
 }
 
 /**
- * Implements hook_form_alter().
+ * Generates a NemID login URL.
+ *
+ * @param array $options
+ *   Link options @see l().
+ *
+ * @return string
+ *   Generated login URL.
  */
-function nemlogin_form_alter(&$form, &$form_state, $form_id) {
-  switch ($form_id) {
-    case 'webform_configure_form':
+function nemlogin_get_login_url(array $options = array()) {
+  $options += array('absolute' => TRUE);
 
-      $form['advanced']['nemlogin_link_enable_' . $form['nid']['#value']] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Include nemlogin link'),
-        '#default_value' => variable_get('nemlogin_link_enable_' . $form['nid']['#value'], 0),
-      );
-      $form['#submit'][] = 'nemlogin_webform_configure_save';
-      break;
-
-    case strstr($form_id, 'webform_client_form'):
-      $nid = $form['#node']->nid;
-      if (variable_get('nemlogin_link_enable_' . $nid, 0)) {
-        try {
-          $as = get_simple_saml_auth();
-
-          // Check if user is already authentificated.
-          if ($as->isAuthenticated()) {
-            // If CPR is fetched, prefill the form.
-            $cpr = attempt_fetch_number_identifier($as, 'cpr');
-            if ($cpr && module_exists('vcv_serviceplatformen')) {
-              $serviceplaformen_message = vcv_serviceplatformen_get_address($cpr);
-              if ($serviceplaformen_message['status']) {
-                $serviceplaformen_message['cpr'] = $cpr;
-                $serviceplaformen_message['pid'] = attempt_fetch_number_identifier($as, 'pid');
-
-                nemid_populate_fields_recursive($form['submitted'], $serviceplaformen_message);
-              }
-            }
-
-            // If CVR is fetched, prefill the form.
-            $cvr = attempt_fetch_number_identifier($as, 'cvr');
-            if ($cvr && module_exists('cvr_serviceplatformen')) {
-              $serviceplaformen_message = cvr_serviceplatformen_query_info($cvr);
-              if ($serviceplaformen_message['status']) {
-                $serviceplaformen_message['rid'] = attempt_fetch_number_identifier($as, 'rid');
-
-                nemid_populate_fields_recursive($form['submitted'], $serviceplaformen_message);
-              }
-            }
-
-            global $base_url;
-            global $base_path;
-            $return_to_link = $base_url . $base_path . "node/$nid";
-
-            // Logout url.
-            $form['submitted'][] = array(
-              '#markup' => '<a href="' . $as->getLogoutURL($return_to_link) . '">Logout af nemid</a>',
-              '#weight' => -99,
-            );
-          }
-          else {
-            // If modify form to include the link for authentification.
-            $form['submitted'][] = array(
-              '#markup' => l(
-                t('Login med Nemlogin'),
-                'nemlogin/require/' . $nid
-              ),
-              '#weight' => -99,
-            );
-          }
-        }
-        catch (Exception $e) {
-          watchdog("Nemlogin", 'Cannot initialize simplesaml request: @message', array('@message' => $e->getMessage()), WATCHDOG_ERROR);
-        }
-      }
-
-      break;
+  if (empty($options['query']['destination'])) {
+    $options['query']['destination'] = ltrim(request_uri(), '/');
   }
+
+  return url('nemlogin/login', $options);
 }
 
 /**
- * Save webform configuration.
+ * Generates a NemID logout URL.
+ *
+ * @param array $options
+ *   Link options @see l().
+ *
+ * @return string
+ *   Generated login URL.
  */
-function nemlogin_webform_configure_save($form, &$form_state) {
-  $login_block_enable = $form_state['values']['nemlogin_link_enable_' . $form['nid']['#value']];
-  variable_set('nemlogin_link_enable_' . $form['nid']['#value'], $login_block_enable);
+function nemlogin_get_logout_url(array $options = array()) {
+  $options += array('absolute' => TRUE);
+
+  if (empty($options['query']['destination'])) {
+    $options['query']['destination'] = ltrim(request_uri(), '/');
+  }
+
+  return url('nemlogin/logout', $options);
 }

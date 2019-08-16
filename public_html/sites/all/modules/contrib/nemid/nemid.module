@@ -50,8 +50,8 @@ function nemid_webform_component_info() {
       'title_inline' => FALSE,
       'conditional' => FALSE,
       'group' => FALSE,
-      'private' => FALSE,
       'spam_analysis' => FALSE,
+      'private' => FALSE,
       'attachment' => FALSE,
     ),
   );
@@ -271,4 +271,98 @@ function nemid_populate_fields_recursive(array &$tree, array $message) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function nemid_form_alter(&$form, &$form_state, $form_id) {
+  if (!module_exists('nemlogin')) {
+    return;
+  }
+
+  switch ($form_id) {
+    case 'webform_configure_form':
+      $nid = $form['nid']['#value'];
+      $form['advanced']['nemlogin_link_enable_' . $nid] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Include nemlogin link'),
+        '#default_value' => variable_get('nemlogin_link_enable_' . $nid, 0),
+      );
+      $form['advanced']['nemlogin_link_auto_redirect_' . $nid] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Redirect to nemlogin link automatically'),
+        '#default_value' => variable_get('nemlogin_link_auto_redirect_' . $nid, 0),
+        '#states' => array(
+          'invisible' => array(
+            ':input[name="nemlogin_link_enable_' . $nid . '"]' => array('checked' => FALSE),
+          ),
+        ),
+      );
+
+      $form['#submit'][] = 'nemid_nemlogin_webform_configure_save';
+      break;
+
+    case strstr($form_id, 'webform_client_form'):
+      $nid = $form['#node']->nid;
+      if (variable_get('nemlogin_link_enable_' . $nid, 0)) {
+        $nemlogin = nemlogin_get_plugin_object();
+        if (empty($nemlogin)) {
+          watchdog("Nemlogin", 'Nemlogin authorization object is empty. Check nemlogin configuration.', array(), WATCHDOG_WARNING);
+          return;
+        }
+        try {
+          // Check if user is already authentificated.
+          if ($nemlogin->isAuthenticated()) {
+            // If CPR is fetched, prefill the form.
+            $cpr = $nemlogin->fetchValue('cpr');
+            if ($cpr && module_exists('vcv_serviceplatformen')) {
+              $serviceplaformen_message = vcv_serviceplatformen_get_address($cpr);
+              if ($serviceplaformen_message['status']) {
+                $serviceplaformen_message['cpr'] = $cpr;
+                $serviceplaformen_message['pid'] = $nemlogin->fetchValue('pid');
+                nemid_populate_fields_recursive($form['submitted'], $serviceplaformen_message);
+              }
+            }
+
+            // If CVR is fetched, prefill the form.
+            $cvr = $nemlogin->fetchValue('cvr');
+            if ($cvr && module_exists('cvr_serviceplatformen')) {
+              $serviceplaformen_message = cvr_serviceplatformen_query_info($cvr);
+              if ($serviceplaformen_message['status']) {
+                $serviceplaformen_message['rid'] = $nemlogin->fetchValue('rid');
+                nemid_populate_fields_recursive($form['submitted'], $serviceplaformen_message);
+              }
+            }
+          } else {
+            // If user shall be redirected to NemLogin automatically.
+            if (variable_get('nemlogin_link_auto_redirect_' . $nid, 0)) {
+              drupal_goto(nemlogin_get_login_url());
+            }
+          }
+
+          $form['submitted'][] = array(
+            '#markup' => nemlogin_link(),
+            '#weight' => -99,
+          );
+        }
+        catch (Exception $e) {
+          watchdog("Nemlogin", 'Cannot initialize simplesaml request: @message', array('@message' => $e->getMessage()), WATCHDOG_ERROR);
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Custom submit callback to save nemlogin webform configuration.
+ */
+function nemid_nemlogin_webform_configure_save($form, &$form_state) {
+  $nid = $form['nid']['#value'];
+
+  $login_link_enable = $form_state['values']['nemlogin_link_enable_' . $nid];
+  variable_set('nemlogin_link_enable_' . $nid, $login_link_enable);
+
+  $login_link_auto_redirect = $form_state['values']['nemlogin_link_auto_redirect_' . $nid];
+  variable_set('nemlogin_link_auto_redirect_' . $nid, $login_link_auto_redirect);
 }
