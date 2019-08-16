@@ -58,10 +58,6 @@
   &.completed {
     border-color: $brand-primary;
     background-color: white;
-
-    .webform-progressbar-page-label {
-      text-decoration: line-through;
-    }
   }
   &.current {
     border-color: $brand-primary;

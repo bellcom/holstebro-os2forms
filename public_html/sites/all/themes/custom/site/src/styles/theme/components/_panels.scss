@@ -30,20 +30,23 @@
     text-decoration: none;
   }
 
-  &:before {
-    display: inline-block;
-
-    margin-right: 10px;
-
-    font-family: FontAwesome;
-    font-size: $font-size-large;
-    content: $fa-var-plus-circle;
-  }
-
-  &[aria-expanded="true"] {
+  &[data-toggle="collapse"] {
 
     &:before {
-      content: $fa-var-minus-circle;
+      display: inline-block;
+
+      margin-right: 10px;
+
+      font-family: FontAwesome;
+      font-size: $font-size-large;
+      content: $fa-var-plus-circle;
+    }
+
+    &[aria-expanded="true"] {
+
+      &:before {
+        content: $fa-var-minus-circle;
+      }
     }
   }
 }
