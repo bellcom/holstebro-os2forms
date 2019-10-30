@@ -1,0 +1,127 @@
+// |--------------------------------------------------------------------------
+// | Panel
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .panel
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin panels-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.panel {}
+.panel-title {
+  display: block;
+
+  font-weight: $font-weight-bold;
+
+  &, &:hover, &:focus {
+    text-decoration: none;
+  }
+
+  &[data-toggle="collapse"] {
+
+    &:before {
+      display: inline-block;
+
+      margin-right: 10px;
+
+      font-family: FontAwesome;
+      font-size: $font-size-large;
+      content: $fa-var-plus-circle;
+    }
+
+    &[aria-expanded="true"] {
+
+      &:before {
+        content: $fa-var-minus-circle;
+      }
+    }
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+.panel,
+.panel-default {
+
+  .panel-heading {
+    padding: 0;
+    border: 0;
+
+    background-color: transparent;
+  }
+
+  .panel-title {
+    padding: $panel-heading-padding;
+
+    font-size: $font-size-base;
+    border-radius: $border-radius-base;
+
+    background-color: $panel-default-heading-bg;
+
+    &, &:hover, &:focus {
+      color: $text-color;
+    }
+
+    &:before {
+      color: $text-color;
+    }
+
+    &[aria-expanded="true"] {
+      color: white;
+      background-color: $brand-tertiary;
+
+      &:before {
+        color: white;
+      }
+    }
+  }
+}
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

@@ -1,0 +1,114 @@
+// |--------------------------------------------------------------------------
+// | Forms
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .forms
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.form-group {
+  margin-bottom: floor( ($form-group-margin-bottom * 1.5) );
+}
+
+.form-control {
+  @include transition(border-color ease-in-out .15s, box-shadow ease-in-out .15s);
+
+  &::-webkit-input-placeholder {
+    font-style: italic;
+  }
+  &:-moz-placeholder {
+    font-style: italic;
+  }
+  &::-moz-placeholder {
+    font-style: italic;
+  }
+  &:-ms-input-placeholder {
+    font-style: italic;
+  }
+
+  &:focus {
+    @include box-shadow(0 0 5px rgba(0, 0, 0, .7));
+  }
+}
+
+.control-label {
+  font-size: $font-size-large;
+  font-weight: $font-weight-bold;
+}
+
+.form-required {
+  font-family: Verdana, Arial, sans-serif;
+  font-weight: bold;
+  font-size: inherit;
+
+  color: $brand-danger;
+}
+
+.help-block {
+  font-size: $font-size-small;
+
+  color: $text-color;
+}
+
+// Fixes an issue where the selector gets height: 1em applied.
+fieldset.collapsed {
+  height: auto !important;
+}
+
+input[type="file"]:focus {
+  outline: none;
+
+  @include box-shadow(none);
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

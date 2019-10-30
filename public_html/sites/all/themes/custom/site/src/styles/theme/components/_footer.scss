@@ -1,0 +1,107 @@
+// |--------------------------------------------------------------------------
+// | Footer
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .layout__footer
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// Responsive
+$xs-layout-footer-top-bottom-padding: 20px;
+$sm-layout-footer-top-bottom-padding: 30px;
+$md-layout-footer-top-bottom-padding: 30px;
+$lg-layout-footer-top-bottom-padding: 40px;
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin layout__footer-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.layout__footer {
+  background-color: $body-bg-secondary;
+
+  .flexy-list {
+    margin-top: 10px;
+
+    > * {
+      padding-left: 15px;
+      padding-right: 15px;
+
+      border-right: 1px solid $text-color;
+
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+}
+
+.layout__footer__inner {
+  padding-top: $xs-layout-footer-top-bottom-padding;
+  padding-bottom: $xs-layout-footer-top-bottom-padding;
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {
+
+  .layout__footer__inner {
+    padding-top: $sm-layout-footer-top-bottom-padding;
+    padding-bottom: $sm-layout-footer-top-bottom-padding;
+  }
+}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {
+
+  .layout__footer__inner {
+    padding-top: $md-layout-footer-top-bottom-padding;
+    padding-bottom: $md-layout-footer-top-bottom-padding;
+  }
+}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {
+
+  .layout__footer__inner {
+    padding-top: $lg-layout-footer-top-bottom-padding;
+    padding-bottom: $lg-layout-footer-top-bottom-padding;
+  }
+}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

@@ -1,0 +1,249 @@
+// |--------------------------------------------------------------------------
+// | Boxy
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .boxy
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// Responsive
+$xs-boxy-spacing-left-right: 10px;
+$sm-boxy-spacing-left-right: 20px;
+$md-boxy-spacing-left-right: $boxy-spacing-left-right;
+$lg-boxy-spacing-left-right: $boxy-spacing-left-right;
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin boxy-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.boxy {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .05);
+}
+
+.boxy__heading {
+  padding-left: $xs-boxy-spacing-left-right;
+  padding-right: $xs-boxy-spacing-left-right;
+
+  .btn-default {
+    background-color: darken($btn-default-bg, 10%);
+  }
+
+  .btn + .btn {
+    margin-left: 8px;
+  }
+}
+
+.boxy__body {
+  padding-left: $xs-boxy-spacing-left-right;
+  padding-right: $xs-boxy-spacing-left-right;
+}
+
+.boxy__footer {
+  padding-left: $xs-boxy-spacing-left-right;
+  padding-right: $xs-boxy-spacing-left-right;
+
+  background-color: #f6f6f6;
+
+  a {
+
+    &, &:hover {
+      color: $text-color;
+
+      text-decoration: underline;
+    }
+  }
+}
+
+.boxy {
+
+  &.boxy--no-stacked-spacing {
+    margin-bottom: 0;
+  }
+}
+
+.boxy__heading__title {
+  display: inline-block;
+
+  font-weight: $headings-font-weight-bold;
+
+  + .boxy__heading__meta-data {
+    margin-left: $grid-gutter-width;
+  }
+}
+
+.boxy__heading__meta-data {
+  display: inline-block;
+
+  font-size: $font-size-h6;
+  color: $boxy-heading-title-color;
+
+  + .boxy__heading__meta-data {
+    margin-left: $grid-gutter-width / 2;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+.boxy--light {
+
+  .boxy__heading,
+  .boxy__body {
+    background-color: $body-bg-secondary;
+  }
+}
+
+.boxy--danger {
+
+  .boxy__heading {
+    background-color: $state-danger-bg;
+  }
+}
+
+.boxy--success {
+
+  .boxy__heading {
+    background-color: $state-success-bg;
+  }
+}
+
+.boxy--warning {
+
+  .boxy__heading {
+    background-color: $state-warning-bg;
+  }
+}
+
+.boxy--main-content {
+
+  .webform-progressbar {
+    display: none;
+  }
+}
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {
+
+  .boxy__heading {
+    padding-left: $sm-boxy-spacing-left-right;
+    padding-right: $sm-boxy-spacing-left-right;
+  }
+
+  .boxy__body {
+    padding-left: $sm-boxy-spacing-left-right;
+    padding-right: $sm-boxy-spacing-left-right;
+  }
+
+  .boxy__footer {
+    padding-left: $sm-boxy-spacing-left-right;
+    padding-right: $sm-boxy-spacing-left-right;
+  }
+}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {
+
+  .boxy__heading {
+    padding-left: $md-boxy-spacing-left-right;
+    padding-right: $md-boxy-spacing-left-right;
+  }
+
+  .boxy__body {
+    padding-left: $md-boxy-spacing-left-right;
+    padding-right: $md-boxy-spacing-left-right;
+  }
+
+  .boxy__footer {
+    padding-left: $md-boxy-spacing-left-right;
+    padding-right: $md-boxy-spacing-left-right;
+  }
+
+  .boxy--main-content {
+
+    .boxy__heading {
+      padding-left: $md-boxy-spacing-left-right * 3;
+      padding-right: $md-boxy-spacing-left-right * 3;
+    }
+
+    .boxy__body {
+      padding: ($boxy-heading-spacing-top-bottom * 3) ($md-boxy-spacing-left-right * 3);
+    }
+
+    .boxy__footer {
+      padding-left: $md-boxy-spacing-left-right * 3;
+      padding-right: $md-boxy-spacing-left-right * 3;
+    }
+  }
+}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {
+
+  .boxy__heading {
+    padding-left: $lg-boxy-spacing-left-right;
+    padding-right: $lg-boxy-spacing-left-right;
+  }
+
+  .boxy__body {
+    padding-left: $lg-boxy-spacing-left-right;
+    padding-right: $lg-boxy-spacing-left-right;
+  }
+
+  .boxy__footer {
+    padding-left: $lg-boxy-spacing-left-right;
+    padding-right: $lg-boxy-spacing-left-right;
+  }
+
+  .boxy--main-content {
+
+    .boxy__heading {
+      padding-left: $lg-boxy-spacing-left-right * 3;
+      padding-right: $lg-boxy-spacing-left-right * 3;
+    }
+
+    .boxy__body {
+      padding: ($boxy-heading-spacing-top-bottom * 3) ($lg-boxy-spacing-left-right * 3);
+    }
+
+    .boxy__footer {
+      padding-left: $lg-boxy-spacing-left-right * 3;
+      padding-right: $lg-boxy-spacing-left-right * 3;
+    }
+  }
+}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

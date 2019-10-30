@@ -1,0 +1,72 @@
+// |--------------------------------------------------------------------------
+// | Address autocomplete.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .webform-component-address-autocomp
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.webform-component-address-autocomp {
+
+  .input-group-addon {}
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {
+
+  .webform-component-address-autocomp {
+
+    .input-group {
+      max-width: 60%;
+    }
+  }
+}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

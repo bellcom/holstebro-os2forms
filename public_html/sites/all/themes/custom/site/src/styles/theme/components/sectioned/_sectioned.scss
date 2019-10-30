@@ -1,0 +1,80 @@
+// |--------------------------------------------------------------------------
+// | Sectioned
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .sectioned
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.sectioned {}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+.sectioned--dark {
+  @include sectioned-mixin($body-bg-quaternary);
+}
+
+.sectioned--light {
+  @include sectioned-mixin($body-bg-secondary);
+}
+
+.sectioned--page-header {
+  //@include sectioned-mixin($body-bg-secondary);
+
+  h1 {
+    margin: 0;
+    padding: 0;
+  }
+
+  .webform-progressbar-placeholder {
+    margin-top: 50px;
+  }
+}
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

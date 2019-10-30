@@ -1,0 +1,49 @@
+$flexy-navigation-default-height: inherit !default;
+
+// Item link
+$flexy-navigation-item-link-font-family: $font-family-base !default;
+$flexy-navigation-item-link-font-size: $font-size-base !default;
+$flexy-navigation-item-link-font-weight: $font-weight !default;
+$flexy-navigation-item-link-font-color: $headings-color;
+$flexy-navigation-item-link-background-color: transparent !default;
+
+$flexy-navigation-item-link-hover-font-color: $brand-tertiary;
+$flexy-navigation-item-link-hover-background-color: transparent !default;
+
+$flexy-navigation-item-active-link-font-color: #fff;
+$flexy-navigation-item-active-link-background-color: $brand-tertiary;
+
+$flexy-navigation-item-dropdown-icon: $fa-var-angle-down !default;
+
+$flexy-navigation-spacing-left-right: 25px;
+
+// Dropdown megamenu
+$flexy-navigation-item-dropdown-megamenu-spacing-top-bottom: floor( ( $grid-gutter-width / 2 ) ) !default;
+$flexy-navigation-item-dropdown-megamenu-spacing-left-right: floor( ( $grid-gutter-width / 2 ) ) !default;
+$flexy-navigation-item-dropdown-megamenu-zindex: $zindex-dropdown !default;
+$flexy-navigation-item-dropdown-megamenu-background-color: $body-bg !default;
+$flexy-navigation-item-dropdown-megamenu-box-shadow: none !default;
+
+// Dropdown menu
+$flexy-navigation-item-dropdown-menu-zindex: $zindex-dropdown !default;
+$flexy-navigation-item-dropdown-menu-background-color: $body-bg !default;
+$flexy-navigation-item-dropdown-menu-box-shadow: 0 0 10px 0 rgba(0, 0, 0, .12);
+
+$flexy-navigation-item-dropdown-menu-item-link-font-family: $font-family-base !default;
+$flexy-navigation-item-dropdown-menu-item-link-font-size: ( $font-size-base - 1px );
+$flexy-navigation-item-dropdown-menu-item-link-font-weight: $font-weight !default;
+$flexy-navigation-item-dropdown-menu-item-link-font-color: $text-color !default;
+$flexy-navigation-item-dropdown-menu-item-link-background-color: transparent !default;
+
+$flexy-navigation-item-dropdown-menu-item-hover-link-font-color: $headings-color;
+$flexy-navigation-item-dropdown-menu-item-hover-link-background-color: transparent !default;
+
+$flexy-navigation-item-dropdown-menu-item-active-link-font-color: $brand-tertiary;
+$flexy-navigation-item-dropdown-menu-item-active-link-background-color: transparent !default;
+
+$flexy-navigation-item-dropdown-menu-item-dropdown-icon: $fa-var-angle-right !default;
+
+// Icon link
+$flexy-navigation-icon-link-font-size: $font-size-base !default;
+$flexy-navigation-icon-link-font-color: $text-color !default;
+$flexy-navigation-icon-link-spacing-left-right: floor( ($grid-gutter-width / 2) ) !default;

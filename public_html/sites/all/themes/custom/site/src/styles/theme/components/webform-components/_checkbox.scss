@@ -1,0 +1,195 @@
+// |--------------------------------------------------------------------------
+// | Radio.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .radio
+// |
+
+// Inspired by: https://bootsnipp.com/snippets/ZkMKE
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+div.checkbox {
+  padding-left: 20px;
+
+  .control-label {
+    font-size: $font-size-base;
+  }
+
+  label {
+    display: inline-block;
+    position: relative;
+    padding-left: 5px;
+
+    &:before {
+      content: "";
+      display: inline-block;
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      left: 0;
+      margin-left: -20px;
+      border: 1px solid $input-border;
+      border-radius: 3px;
+      background-color: $input-bg;
+      transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+    }
+
+    &:after {
+      display: inline-block;
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 0;
+      top: 0;
+      margin-left: -20px;
+      padding-left: 3px;
+      padding-top: 1px;
+      font-size: 11px;
+      color: #555555;
+    }
+  }
+
+  input[type="checkbox"] {
+    opacity: 0;
+
+    &:focus {
+
+      + label {
+
+        &:before {
+          border-color: $input-border-focus;
+          @include box-shadow(0 0 5px rgba(0, 0, 0, .7));
+        }
+      }
+    }
+
+    &:checked {
+
+      + label {
+
+        &:before {
+          border-color: $input-border-focus;
+        }
+
+        &:after {
+          font-family: 'FontAwesome';
+          content: "\f00c";
+          color: $brand-tertiary;
+        }
+      }
+    }
+
+    &:disabled {
+
+      + label {
+        opacity: 0.65;
+
+        &:before {
+          background-color: #eeeeee;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+.checkbox.checkbox-inline {
+  margin-top: 0;
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+.checkbox-primary input[type="checkbox"]:checked + label::before {
+  background-color: #428bca;
+  border-color: #428bca;
+}
+
+.checkbox-primary input[type="checkbox"]:checked + label::after {
+  color: #fff;
+}
+
+.checkbox-danger input[type="checkbox"]:checked + label::before {
+  background-color: #d9534f;
+  border-color: #d9534f;
+}
+
+.checkbox-danger input[type="checkbox"]:checked + label::after {
+  color: #fff;
+}
+
+.checkbox-info input[type="checkbox"]:checked + label::before {
+  background-color: #5bc0de;
+  border-color: #5bc0de;
+}
+
+.checkbox-info input[type="checkbox"]:checked + label::after {
+  color: #fff;
+}
+
+.checkbox-warning input[type="checkbox"]:checked + label::before {
+  background-color: #f0ad4e;
+  border-color: #f0ad4e;
+}
+
+.checkbox-warning input[type="checkbox"]:checked + label::after {
+  color: #fff;
+}
+
+.checkbox-success input[type="checkbox"]:checked + label::before {
+  background-color: #5cb85c;
+  border-color: #5cb85c;
+}
+
+.checkbox-success input[type="checkbox"]:checked + label::after {
+  color: #fff;
+}
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

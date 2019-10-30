@@ -1,0 +1,61 @@
+// Body colors
+$body-bg-secondary: #fff;
+$body-bg-tertiary: #f1f1f1;
+$body-bg-quaternary: #ccc;
+
+// Border colors
+$border-color: #E8E8E8;
+$border-color-highlighted: $brand-primary !default;
+$border-color-light: lighten($border-color, 15%) !default;
+$border-color-dark: darken($border-color, 15%) !default;
+
+// Text colors
+$text-color-highlighted: $brand-primary !default;
+$text-color-light: $text-muted !default;
+$text-color-dark: $headings-color;
+$text-color-secondary: $text-color !default;
+
+// Headings colors
+$headings-color-highlighted: $brand-primary !default;
+$headings-color-light: $text-muted !default;
+$headings-color-dark: $text-color-dark !default;
+$headings-color-secondary: $headings-color !default;
+
+// Secondary
+$brand-secondary: #19b453;
+
+$btn-secondary-color: #fff !default;
+$btn-secondary-bg: $brand-secondary !default;
+$btn-secondary-border: darken($btn-secondary-bg, 5%) !default;
+
+$label-secondary-bg: $brand-secondary !default;
+
+$panel-secondary-text: #fff !default;
+$panel-secondary-border: $brand-secondary !default;
+$panel-secondary-heading-bg: $brand-secondary !default;
+
+// Tertiary
+$brand-tertiary: #7F9DCD;
+
+$btn-tertiary-color: #fff !default;
+$btn-tertiary-bg: $brand-tertiary !default;
+$btn-tertiary-border: darken($btn-tertiary-bg, 5%) !default;
+
+$label-tertiary-bg: $brand-tertiary !default;
+
+$panel-tertiary-text: #fff !default;
+$panel-tertiary-border: $brand-tertiary !default;
+$panel-tertiary-heading-bg: $brand-tertiary !default;
+
+// Quternary
+$brand-quaternary: #0088ab;
+
+$btn-quaternary-color: #fff !default;
+$btn-quaternary-bg: $brand-quaternary !default;
+$btn-quaternary-border: darken($btn-quaternary-bg, 5%) !default;
+
+$label-quaternary-bg: $brand-quaternary !default;
+
+$panel-quaternary-text: #fff !default;
+$panel-quaternary-border: $brand-quaternary !default;
+$panel-quaternary-heading-bg: $brand-quaternary !default;

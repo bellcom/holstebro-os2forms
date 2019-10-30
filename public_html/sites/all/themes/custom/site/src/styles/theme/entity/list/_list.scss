@@ -1,0 +1,103 @@
+// |--------------------------------------------------------------------------
+// | List
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .entity-list
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin entity-list-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.entity-list {
+  display: flex;
+
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+
+  + .entity-list {
+    margin-top: 14px;
+  }
+}
+
+.entity-list__data {
+  display: flex;
+
+  + .entity-list__form {
+    margin-left: 8px;
+  }
+}
+.entity-list__data__item {
+
+  + .entity-list__data__item {
+    margin-left: 10px;
+  }
+}
+
+.entity-list__data__item--status {
+  min-width: 15px;
+}
+
+.entity-list__data__item--role {
+  min-width: 30px;
+}
+
+.entity-list__data__item--name {}
+
+.entity-list__controls {
+  flex-wrap: nowrap;
+
+  > * {
+    margin-left: 8px;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

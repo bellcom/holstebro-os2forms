@@ -1,0 +1,75 @@
+// |--------------------------------------------------------------------------
+// | Select.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .webform-component-select
+// | - .webform-component-select-or-other
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.webform-component-select,
+.webform-component-select-or-other {
+
+  .form-item {
+
+    &.form-group {
+      margin-bottom: 0;
+    }
+
+    + .form-item {
+      margin-top: 10px;
+    }
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

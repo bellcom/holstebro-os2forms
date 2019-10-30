@@ -1,0 +1,128 @@
+// |--------------------------------------------------------------------------
+// | Overrides
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - img
+// | - .icon
+// | - .form-control
+// | - .row--equal-height-columns
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+strong {
+  color: $text-color-dark;
+}
+
+img {
+  max-width: 100%;
+}
+
+.icon {
+
+  &:not(.glyphicon) {
+    @extend .fa; // Extend Font Awesome, so .icon can be used instead (or switched out)
+  }
+}
+
+.label {
+  padding: 4px 16px;
+
+  border-radius: 12px;
+}
+
+.label-default {
+
+  &,
+  &:hover,
+  &:focus {
+    color: $text-color;
+  }
+}
+
+.container-fluid {
+  max-width: 1350px;
+}
+
+th.checkbox,
+td.checkbox {
+  display: table-cell;
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}
+
+// Flexbox
+.flexbox {
+
+  .row--equal-height-columns {
+
+    &:not(.view),
+    > .view-content {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      > [class*='col-'] {
+        display: flex;
+
+        flex-direction: column;
+      }
+
+      // Fixes Safari issue (https://stackoverflow.com/questions/34250282/flexbox-safari-bug-flex-wrap)
+      &:after,
+      &:before {
+        content: normal; // IE doesn't support `initial`
+      }
+    }
+  }
+}
+
+// No flexbox
+.no-flexbox {}

@@ -1,0 +1,128 @@
+// |--------------------------------------------------------------------------
+// | Progressbar.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .webform-progressbar
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin forms-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.webform-progressbar {
+  display: flex;
+
+  flex-direction: column-reverse;
+}
+
+.webform-progressbar-outer {
+  border: 0;
+}
+.webform-progressbar-inner {
+  height: 4px;
+
+  border: 0;
+
+  background-color: $brand-primary;
+}
+
+.webform-progressbar-number {
+  margin-bottom: $grid-gutter-width;
+
+  font-size: $font-size-large;
+  text-transform: uppercase;
+}
+
+.webform-progressbar-page {
+  margin-top: -18px;
+  margin-left: -15px;
+
+  width: 30px;
+  height: 30px;
+
+  border-width: 3px;
+  border-radius: 100%;
+  border-color: white;
+
+  &.completed {
+    border-color: $brand-primary;
+    background-color: white;
+  }
+  &.current {
+    border-color: $brand-primary;
+    background-color: $brand-primary;
+  }
+  &.clickable {}
+
+  .webform-progressbar-page-label {
+    display: inline-block;
+    top: 30px;
+
+    font-weight: $font-weight-bold;
+  }
+
+  .webform-progressbar-page-number {
+    display: none;
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {
+
+  .webform-progressbar {
+    padding-left: $md-boxy-spacing-left-right * 3;
+    padding-right: $md-boxy-spacing-left-right * 3;
+  }
+}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {
+
+  .webform-progressbar {
+    padding-left: $lg-boxy-spacing-left-right * 3;
+    padding-right: $lg-boxy-spacing-left-right * 3;
+  }
+}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

@@ -70,7 +70,7 @@ function nemid_webform_edit_component($component) {
     '#description' => t('Make this field hidden.'),
     '#weight' => 10,
     '#parents' => array('extra', 'hidden'),
-  );
+ );
   return $form;
 }
 
@@ -116,10 +116,12 @@ function nemid_webform_render_component($component, $value = NULL, $filter = TRU
       $element['#disabled'] = TRUE;
     }
   }
+
   if ($component['extra']['hidden'] && !webform_results_access($node)) {
-      $element['#type'] = 'hidden';
-      $element['#title_display'] = 'none';
+     $element['#type'] = 'hidden';
+     $element['#title_display'] = 'none';
   }
+
   // Enforce uniqueness.
   if ($component['extra']['unique']) {
     $element['#element_validate'][] = 'webform_validate_unique';

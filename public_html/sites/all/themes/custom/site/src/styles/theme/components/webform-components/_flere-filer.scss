@@ -1,0 +1,97 @@
+// |--------------------------------------------------------------------------
+// | Flere filer.
+// |--------------------------------------------------------------------------
+// |
+// | This file contains styles for the following:
+// | - .webform-component--flere_filer
+// |
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Mixins
+// --------------------------------------------------
+
+@mixin webform-component-flere-filer-mixin() {}
+
+// --------------------------------------------------
+// Styling
+// --------------------------------------------------
+
+.webform-component--flere_filer {
+
+  &.panel {
+    padding: 10px 20px;
+    margin-bottom: $form-group-margin-bottom;
+
+    border: 1px solid #888 !important;
+    border-radius: $border-radius-base;
+
+    .panel-heading {
+      margin-bottom: 0;
+    }
+
+    .panel-title {
+      margin-right: -21px;
+      margin-left: -21px;
+
+      padding: 10px 21px;
+
+      border: 1px solid #888;
+      border-radius: 0;
+      border-top-left-radius: $border-radius-base;
+      border-top-right-radius: $border-radius-base;
+
+      font-size: $font-size-large;
+      background-color: white;
+    }
+
+    .panel-body {
+      padding-top: 10px;
+
+      .form-group {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// --------------------------------------------------
+// Variants
+// --------------------------------------------------
+
+// --------------------------------------------------
+// Responsive
+// --------------------------------------------------
+
+// Mobile - and up
+@media #{$breakpoint-mobile-and-up} {}
+
+// Mobile - only
+@media #{$breakpoint-mobile-only} {}
+
+// Tablet - and up
+@media #{$breakpoint-tablet-and-up} {}
+
+// Tablet - only
+@media #{$breakpoint-tablet-only} {}
+
+// Desktop - and up
+@media #{$breakpoint-desktop-and-up} {}
+
+// Desktop - only
+@media #{$breakpoint-desktop-only} {}
+
+// Large desktop - and up
+@media #{$breakpoint-large-desktop-and-up} {}
+
+// Print
+@media print {}
+
+// Touch
+.touchevents {}
+
+// No touch
+.no-touchevents {}

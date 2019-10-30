@@ -1,0 +1,33 @@
+// Static
+$flexy-header-static-background-color: $body-bg-secondary;
+
+// Sticky
+$flexy-header-sticky-zindex: $zindex-navbar !default;
+$flexy-header-sticky-background-color: rgba($body-bg-secondary, .95) !default;
+$flexy-header-sticky-unpinned-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .12);
+
+// Responsive (static)
+$xs-flexy-header-static-row-height: 60px !default;
+$xs-flexy-header-static-logo-height: 40px;
+
+$sm-flexy-header-static-row-height: 100px;
+$sm-flexy-header-static-logo-height: 54px;
+
+$md-flexy-header-static-row-height: 110px;
+$md-flexy-header-static-logo-height: 60px;
+
+$lg-flexy-header-static-row-height: 120px;
+$lg-flexy-header-static-logo-height: 60px;
+
+// Responsive (sticky)
+$xs-flexy-header-sticky-row-height: 60px !default;
+$xs-flexy-header-sticky-logo-height: 40px;
+
+$sm-flexy-header-sticky-row-height: 60px !default;
+$sm-flexy-header-sticky-logo-height: 50px;
+
+$md-flexy-header-sticky-row-height: 60px !default;
+$md-flexy-header-sticky-logo-height: 50px;
+
+$lg-flexy-header-sticky-row-height: 60px !default;
+$lg-flexy-header-sticky-logo-height: 50px;
