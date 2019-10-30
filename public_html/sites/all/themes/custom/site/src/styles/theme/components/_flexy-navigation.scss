@@ -79,10 +79,15 @@
 // Desktop - and up
 @media #{$breakpoint-desktop-and-up} {
 
-  .flexy-navigation__item {
+  .flexy-header--static {
 
-    a {
-      padding-top: 50px;
+    .flexy-navigation__item {
+
+      a {
+        margin-top: 50px;
+
+        line-height: initial !important;
+      }
     }
   }
 }
